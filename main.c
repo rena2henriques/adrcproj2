@@ -8,14 +8,10 @@ int main(int argc, char const *argv[])
 
 	printGraph(network);
 
-	if (isCyclic(network) == TRUE) {
-
+	if (checkCycle(network) == TRUE) {
 		printf("\nThe graph has a cycle!\n");
-
 	} else {
-
 		printf("\nThe graph is acyclic!\n");
-
 	}
 
 	return 0;

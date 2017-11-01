@@ -6,8 +6,8 @@
 #define TRUE 1
 #define FALSE 0
 
-int isCyclic(struct Graph* graph);
-int isCyclicUtil(int v, int visited[MAX_GRAPH], int recStack[MAX_GRAPH], struct Graph* graph);
+int checkCycle(struct Graph* graph);
 
+int checkCycleRec(int v, int visited[MAX_GRAPH], int recStack[MAX_GRAPH], struct Graph* graph);
 
 #endif
