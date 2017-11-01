@@ -14,6 +14,7 @@ struct Graph* createGraph(long int V) {
     int i;
 
     struct Graph* graph = (struct Graph*) malloc(sizeof(struct Graph));
+
     graph->V = V;
  
     // Create an array of adjacency lists.  Size of array will be V
@@ -34,6 +35,7 @@ void addEdge(struct Graph* graph, long int src, long int dest, int type) {
     struct AdjListNode* newNode = newAdjListNode(dest, type);
     newNode->next = graph->array[src].head;
     graph->array[src].head = newNode;
+    graph->E++;
 }
  
 // A utility function to print the adjacenncy list representation of graph

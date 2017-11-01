@@ -1,4 +1,5 @@
 #include "graph.h"
+#include "traversal.h"
 
 int main(int argc, char const *argv[])
 {
@@ -6,6 +7,16 @@ int main(int argc, char const *argv[])
 	struct Graph* network = fillGraph(argc, argv);
 
 	printGraph(network);
+
+	if (isCyclic(network) == TRUE) {
+
+		printf("\nThe graph has a cycle!\n");
+
+	} else {
+
+		printf("\nThe graph is acyclic!\n");
+
+	}
 
 	return 0;
 }
