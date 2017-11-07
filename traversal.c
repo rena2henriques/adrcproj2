@@ -61,3 +61,74 @@ int checkCycle(struct Graph* graph) {
  	// there isnt a cycle
     return FALSE;
 }
+
+
+void DFS (int v, int visited[MAX_GRAPH], int *visitedCounter,struct Graph* graph, int prevType, tier1List) {
+
+    // set the node as visited
+    visited[v] = TRUE;
+    (*visitedCounter)++;
+
+    // the check if the node is a Tier 1 ISP
+    int tier1Flag = 1; // 1 if it's a Tier 1, 0 if isn't
+
+    struct AdjListNode *aux = graph->array[v].head;
+        
+    // Recur for all the vertices adjacent to this aux node
+    while(aux != NULL) {
+
+        if(visited[aux->id] == FALSE) {
+            if (routeIsValid(prevType, aux->type)) {
+                DFS(aux->id, visited, graph, aux->type);
+
+                // check if this node is a Tier 1
+                if (aux->type == 3)
+                    tier1Flag = 0;
+            }
+        } 
+
+        aux = aux->next;
+    }    
+
+    // insert the id of the node in a list
+    if (tier1Flag == 1) {
+        insertTier1List(aux->id, tier1List); // CORRECT
+    }
+
+    return;
+} 
+
+
+
+int checkTier1(stack , struct Graph *graph) {
+
+    struct AdjListNode *aux;
+    stack * aux_tier1 = NULL;
+
+    while (stack->next != NULL) {
+
+        id = popStack(stack);
+        aux_tier1 = stack->head; // this is the updated stack
+
+        aux = graph->array[id].head;
+        while(aux != NULL) {
+
+            while(aux_tier1 != NULL) { 
+                if(aux_tier1->id == aux->id) {
+                    
+                }
+
+
+                aux_tier1 = aux_tier1->next;
+            }
+
+            aux = aux->next;
+        }
+
+
+    }
+
+
+
+
+}

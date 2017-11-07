@@ -9,7 +9,6 @@
 
 #define STACK_MAX 64000
 
-
 struct Stack {
     int     data[STACK_MAX];
     int     size;

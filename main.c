@@ -9,9 +9,9 @@ int main(int argc, char const *argv[])
 	printGraph(network);
 
 	if (checkCycle(network) == TRUE) {
-		printf("\nThe graph has a cycle!\n");
+		printf("\nThe network has customer cycles!\n");
 	} else {
-		printf("\nThe graph is acyclic!\n");
+		printf("\nThe network doesn't have customer cycles!\n");
 	}
 
 	return 0;
