@@ -63,7 +63,7 @@ int checkCycle(struct Graph* graph) {
 }
 
 
-void DFS (int v, int visited[MAX_GRAPH], int *visitedCounter,struct Graph* graph, int prevType, tier1List) {
+void DFS (int v, int visited[MAX_GRAPH], int *visitedCounter,struct Graph* graph, int prevType) {//,tier1List) {
 
     // set the node as visited
     visited[v] = TRUE;
@@ -79,26 +79,53 @@ void DFS (int v, int visited[MAX_GRAPH], int *visitedCounter,struct Graph* graph
 
         if(visited[aux->id] == FALSE) {
             if (routeIsValid(prevType, aux->type)) {
-                DFS(aux->id, visited, graph, aux->type);
-
-                // check if this node is a Tier 1
-                if (aux->type == 3)
-                    tier1Flag = 0;
+                DFS(aux->id, visited, visitedCounter, graph, aux->type);
+                //(**)
             }
         } 
-
+		
+		// check if this node is a Tier 1, antigamente estava ali //(**)
+		/*tem que estar aqui porque se fizeres backtrack para um nó que ja 
+		*foi visitado como não ias entrar na condição visited[aux->id] == false, não chegavas a pôr o tierlist1 a 0, 
+		* se tiveres isto aqui de certeza que verificas todos os seus adjacentes mesmo que ja tenha sido visitado*/
+        if (aux->type == 3)
+        tier1Flag = 0;
         aux = aux->next;
     }    
 
     // insert the id of the node in a list
     if (tier1Flag == 1) {
-        insertTier1List(aux->id, tier1List); // CORRECT
+		printf("node: %d is tier 1\n", v); //temporary
+        //insertTier1List(aux->id, tier1List); // CORRECT
     }
 
     return;
 } 
 
 
+int routeIsValid(int prevType, int currentType) {
+		if(prevType == 1 && currentType == 1)
+			return VALID;
+		if(prevType == 1 && currentType == 2)
+			return INVALID;
+		if(prevType == 1 && currentType == 3)
+			return INVALID;
+		if(prevType == 2 && currentType == 1)
+			return VALID;
+		if(prevType == 2 && currentType == 2)
+			return INVALID;
+		if(prevType == 2 && currentType == 3)
+			return INVALID;
+		if(prevType == 3 && currentType == 1)
+			return VALID;
+		if(prevType == 3 && currentType == 2)
+			return VALID;
+		if(prevType == 3 && currentType == 3)
+			return VALID;
+	
+	return -1; //we should not get here
+}
+/*
 
 int checkTier1(stack , struct Graph *graph) {
 
@@ -132,3 +159,4 @@ int checkTier1(stack , struct Graph *graph) {
 
 
 }
+*/

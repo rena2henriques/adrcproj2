@@ -3,6 +3,8 @@
 
 int main(int argc, char const *argv[])
 {
+	int visited[MAX_GRAPH];
+	int visited_counter = 0;
 	// gets a file with the network description, creates the graph and fill it correctly
 	struct Graph* network = fillGraph(argc, argv);
 
@@ -14,5 +16,6 @@ int main(int argc, char const *argv[])
 		printf("\nThe network doesn't have customer cycles!\n");
 	}
 
+	DFS(1, visited, &visited_counter, network, 3); // para começar pode se mandar o 3 como prev que bate sempre certo? temporario
 	return 0;
 }
