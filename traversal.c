@@ -119,72 +119,86 @@ int routeIsValid(int prevType, int currentType) {
 
 int commercially_connected(struct Graph *graph){
 
-    // holds the info about the visited nodes
-    int visited[MAX_GRAPH];
-    int visitedCounter = 0;
+    long int i = 0;
 
-    int i = 0;
+    // linked list with the tier1 nodes
+    struct Tier1 *head = NULL;
 
-    // ADICIONAR LISTA DE TIER1
+    // finds the tier1 nodes
+    for (i=graph->firstNode;i<MAX_GRAPH;i++){
+        // uses the tier1 flag created while reading the file
+        if(graph->array[i].testTier1 == 0 && graph->array[i].head != NULL){
+            // if the tier1 is connected to all other tier1 in the list, we continue the loop
+            // to find the next tier1, else we can conclude that the graph isn't commercially
+            // connected
 
-    // initialization of the arrays at false
-    for(i = 0; i < MAX_GRAPH; i++) {
-        visited[i] = FALSE;
-    }
-
-    // loops until it finds the first node with connections
-    // only then the DFS is started
-    for(i = 0; i < MAX_GRAPH; i++) {
-        if (graph->array[i].head != NULL) {
-            // we initiate the prevType as 3, because if prevType is 3 then the operation
-            // is valid no matter the next step
-            DFS (i, visited, &visitedCounter, graph, 3);
-            break;
+            if(checkTier1Connections(&head, graph, i))
+                continue;
+            else
+                return FALSE;
         }
     }
 
-    if (visitedCounter != graph->total_nodes) 
-        return FALSE;
+    freeList(head);
 
-    /*if (checkTier1())
+    return TRUE;
+}
+
+
+int checkTier1Connections(struct Tier1 **head, struct Graph *graph, long int id){
+
+    if ((*head) == NULL){
+        (*head) = (struct Tier1*) mymalloc( sizeof(struct Tier1));
+        (*head)->id = id;
+        (*head)->next = NULL;
         return TRUE;
-    else
-        return FALSE;*/
-}
-
-
-/*
-
-int checkTier1(stack , struct Graph *graph) {
-
-    struct AdjListNode *aux;
-    stack * aux_tier1 = NULL;
-
-    while (stack->next != NULL) {
-
-        id = popStack(stack);
-        aux_tier1 = stack->head; // this is the updated stack
-
-        aux = graph->array[id].head;
-        while(aux != NULL) {
-
-            while(aux_tier1 != NULL) { 
-                if(aux_tier1->id == aux->id) {
-                    
-                }
-
-
-                aux_tier1 = aux_tier1->next;
-            }
-
-            aux = aux->next;
-        }
-
-
     }
 
+    struct Tier1 *auxTier1 = *head;
+    struct AdjListNode *auxGraph = graph->array[id].head;
 
+    // search the tier1 list
+    while(auxTier1 != NULL) {
+        // search the adj list
+        while( auxGraph != NULL){
+            // if it finds the connections then there's no need to search til the end
+            if(auxTier1->id == auxGraph->id)
+                break;
 
+            auxGraph = auxGraph->next;
+        }
 
+        // if the list was search until the end then no connection was found
+        if (auxGraph == NULL){
+            return FALSE; //even if it was the last one, the break prevents auxgraph from getting to the null
+        }
+
+        // to start at the beginning of the list
+        auxGraph = graph->array[id].head;
+
+        auxTier1 = auxTier1->next;
+    }
+
+    // inserts the tier1 node in the beginning of the list
+    auxTier1 = (struct Tier1*) mymalloc( sizeof(struct Tier1));
+    auxTier1->id = id;
+    auxTier1->next = *head;
+    *head = auxTier1;
+
+    // if we got here it means that this tier1 is connected to any other tier1 node of the list
+    return TRUE;
 }
-*/
+
+// free the linkedlist
+void freeList(struct Tier1 *head){
+
+    struct Tier1 *aux = head;
+
+    while(head != NULL) {
+        aux = head;
+        head = aux->next;
+        free(aux);
+    }
+
+    return;
+}

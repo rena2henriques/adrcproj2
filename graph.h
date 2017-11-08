@@ -5,8 +5,9 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include "utils.h"
 
-#define MAX_GRAPH 64000
+#define MAX_GRAPH 68000
 
 // A structure to represent an adjacency list node
 struct AdjListNode {
@@ -18,14 +19,16 @@ struct AdjListNode {
 // A structure to represent an adjacency list
 struct AdjList {
     struct AdjListNode *head;  // pointer to head node of list
+    long int testTier1;
 };
  
 // A structure to represent a graph. A graph is an array of adjacency lists.
 // Size of array will be V (number of vertices in graph)
 struct Graph {
     long int V;
-    int total_nodes;
-    int E;
+    long int total_nodes;
+    long int E;
+    long int firstNode;
     struct AdjList *array;
 };
 

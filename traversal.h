@@ -2,11 +2,17 @@
 #define TRAVERSAL_H
 
 #include "graph.h"
+#include "utils.h"
 
 #define TRUE 1
 #define FALSE 0
 #define VALID 1
 #define INVALID 0
+
+struct Tier1 {
+	long int id;
+	struct Tier1 *next;
+};
 
 int checkCycle(struct Graph* graph);
 
@@ -17,5 +23,9 @@ void DFS (int v, int visited[MAX_GRAPH], int *visitedCounter,struct Graph* graph
 int routeIsValid(int prevType, int currentType);
 
 int commercially_connected(struct Graph *graph);
+
+int checkTier1Connections(struct Tier1 **head, struct Graph *graph, long int id);
+
+void freeList(struct Tier1 *head);
 
 #endif

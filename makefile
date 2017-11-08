@@ -17,13 +17,13 @@
 CC = gcc
 
 #  Compiler Flags
-CFLAGS = -Wall -c -g
+CFLAGS = -Wall -c -g -ftrapv
 
 #  Sources
-SOURCES = graph.c traversal.c main.c
+SOURCES = graph.c traversal.c utils.c main.c
 
 #  Objects
-OBJECTS = graph.o traversal.o main.o
+OBJECTS = graph.o traversal.o utils.o main.o
 
 interRouting: $(OBJECTS)
 	gcc -o $@ $(OBJECTS)
@@ -33,6 +33,9 @@ graph.o: graph.c graph.h
 
 traversal.o: traversal.c traversal.h
 	$(CC) $(CFLAGS) traversal.c
+
+utils.o: utils.c utils.h
+	$(CC) $(CFLAGS) utils.c
 
 main.o: main.c
 	$(CC) $(CFLAGS) main.c

@@ -2,7 +2,7 @@
  
 // A utility function to create a new adjacency list node
 struct AdjListNode* newAdjListNode(long int id, int type) {
-    struct AdjListNode* newNode = (struct AdjListNode*) malloc(sizeof(struct AdjListNode));
+    struct AdjListNode* newNode = (struct AdjListNode*) mymalloc( sizeof(struct AdjListNode));
     newNode->id = id;
     newNode->type = type;
     newNode->next = NULL;
@@ -20,10 +20,12 @@ struct Graph* createGraph(long int V) {
  
     // Create an array of adjacency lists.  Size of array will be V
     graph->array = (struct AdjList*) malloc(V * sizeof(struct AdjList));
+    graph->firstNode = 64001;
  
      // Initialize each adjacency list as empty by making head as NULL
     for (i = 0; i < V; ++i){
         graph->array[i].head = NULL;
+        graph->array[i].testTier1 = 0;
     }
  
     return graph;
@@ -36,6 +38,12 @@ void addEdge(struct Graph* graph, long int src, long int dest, int type) {
     struct AdjListNode* newNode = newAdjListNode(dest, type);
     newNode->next = graph->array[src].head;
     graph->array[src].head = newNode;
+
+    // if we are inserting a provider route, then this node can't be a tier1
+    if(type == 3)
+        graph->array[src].testTier1++;
+
+    // increments the number of edges
     graph->E++;
 }
  
@@ -89,10 +97,15 @@ struct Graph* fillGraph(int argc, char const *argv[]) {
 
     while (!feof(file)) {
         fgets(temp, sizeof(temp), file);
+
+        // TESTAR O SSCANF PARA O CASO QUE NOS DÃO UM FICHEIRO MAL FEITO
         sscanf(temp, "%li %li %d", &src, &dest, &type);
 		if(graph->array[src].head == NULL) //absolute new node in this graph
 			graph->total_nodes++;		   //if the node re-appears on the file, will not be incremented again
-        // TESTAR O SSCANF PARA O CASO QUE NOS DÃO UM FICHEIRO MAL FEITO
+
+        // used for discovering the first valid node (prevents unecessary operations)
+        if (src < graph->firstNode)
+            graph->firstNode = src;
 
         addEdge(graph, src, dest, type);
     }
