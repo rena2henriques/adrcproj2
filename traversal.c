@@ -143,12 +143,10 @@ int commercially_connected(struct Graph *graph){
         }
     }
 
-    return visitedCounter; // just because, temporary
-
-    /*if (visitedCounter != nºde ISP) 
+    if (visitedCounter != graph->total_nodes) 
         return FALSE;
 
-    if (checkTier1())
+    /*if (checkTier1())
         return TRUE;
     else
         return FALSE;*/
