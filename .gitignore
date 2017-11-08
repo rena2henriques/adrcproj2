@@ -1,0 +1,5 @@
+# executable files
+interRouting
+
+# .o files
+*.o

@@ -16,5 +16,6 @@ void DFS (int v, int visited[MAX_GRAPH], int *visitedCounter,struct Graph* graph
 
 int routeIsValid(int prevType, int currentType);
 
+int commercially_connected(struct Graph *graph);
 
 #endif

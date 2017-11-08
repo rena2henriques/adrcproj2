@@ -78,18 +78,16 @@ void DFS (int v, int visited[MAX_GRAPH], int *visitedCounter,struct Graph* graph
     while(aux != NULL) {
 
         if(visited[aux->id] == FALSE) {
+            // if the next step of the path is valid by the rules of BGP
             if (routeIsValid(prevType, aux->type)) {
                 DFS(aux->id, visited, visitedCounter, graph, aux->type);
-                //(**)
             }
         } 
-		
-		// check if this node is a Tier 1, antigamente estava ali //(**)
-		/*tem que estar aqui porque se fizeres backtrack para um nó que ja 
-		*foi visitado como não ias entrar na condição visited[aux->id] == false, não chegavas a pôr o tierlist1 a 0, 
-		* se tiveres isto aqui de certeza que verificas todos os seus adjacentes mesmo que ja tenha sido visitado*/
+		  
+        // if the node has at least a provider, then it isnt a tier1
         if (aux->type == 3)
-        tier1Flag = 0;
+            tier1Flag = 0;
+
         aux = aux->next;
     }    
 
@@ -102,29 +100,59 @@ void DFS (int v, int visited[MAX_GRAPH], int *visitedCounter,struct Graph* graph
     return;
 } 
 
-
+// checks if a certain the route is valid
 int routeIsValid(int prevType, int currentType) {
 		if(prevType == 1 && currentType == 1)
 			return VALID;
-		if(prevType == 1 && currentType == 2)
-			return INVALID;
-		if(prevType == 1 && currentType == 3)
-			return INVALID;
-		if(prevType == 2 && currentType == 1)
+		else if(prevType == 2 && currentType == 1)
 			return VALID;
-		if(prevType == 2 && currentType == 2)
-			return INVALID;
-		if(prevType == 2 && currentType == 3)
-			return INVALID;
-		if(prevType == 3 && currentType == 1)
+		else if(prevType == 3 && currentType == 1)
 			return VALID;
-		if(prevType == 3 && currentType == 2)
+		else if(prevType == 3 && currentType == 2)
 			return VALID;
-		if(prevType == 3 && currentType == 3)
+		else if(prevType == 3 && currentType == 3)
 			return VALID;
-	
-	return -1; //we should not get here
+        else 
+            return INVALID;
 }
+
+
+int commercially_connected(struct Graph *graph){
+
+    // holds the info about the visited nodes
+    int visited[MAX_GRAPH];
+    int visitedCounter = 0;
+
+    int i = 0;
+
+    // ADICIONAR LISTA DE TIER1
+
+    // initialization of the arrays at false
+    for(i = 0; i < MAX_GRAPH; i++) {
+        visited[i] = FALSE;
+    }
+
+    // loops until it finds the first node with connections
+    // only then the DFS is started
+    for(i = 0; i < MAX_GRAPH; i++) {
+        if (graph->array[i].head != NULL) {
+            // we initiate the prevType as 3, because if prevType is 3 then the operation
+            // is valid no matter the next step
+            DFS (i, visited, &visitedCounter, graph, 3);
+            break;
+        }
+    }
+
+    if (visitedCounter != graph->total_nodes) 
+        return FALSE;
+
+    /*if (checkTier1())
+        return TRUE;
+    else
+        return FALSE;*/
+}
+
+
 /*
 
 int checkTier1(stack , struct Graph *graph) {
