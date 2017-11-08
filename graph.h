@@ -24,6 +24,7 @@ struct AdjList {
 // Size of array will be V (number of vertices in graph)
 struct Graph {
     long int V;
+    int total_nodes;
     int E;
     struct AdjList *array;
 };

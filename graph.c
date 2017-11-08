@@ -16,6 +16,7 @@ struct Graph* createGraph(long int V) {
     struct Graph* graph = (struct Graph*) malloc(sizeof(struct Graph));
 
     graph->V = V;
+    graph->total_nodes = 0;
  
     // Create an array of adjacency lists.  Size of array will be V
     graph->array = (struct AdjList*) malloc(V * sizeof(struct AdjList));
@@ -89,7 +90,8 @@ struct Graph* fillGraph(int argc, char const *argv[]) {
     while (!feof(file)) {
         fgets(temp, sizeof(temp), file);
         sscanf(temp, "%li %li %d", &src, &dest, &type);
-
+		if(graph->array[src].head == NULL) //absolute new node in this graph
+			graph->total_nodes++;		   //if the node re-appears on the file, will not be incremented again
         // TESTAR O SSCANF PARA O CASO QUE NOS DÃO UM FICHEIRO MAL FEITO
 
         addEdge(graph, src, dest, type);

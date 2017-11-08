@@ -17,5 +17,8 @@ int main(int argc, char const *argv[])
 	}
 
 	DFS(1, visited, &visited_counter, network, 3); // para começar pode se mandar o 3 como prev que bate sempre certo? temporario
+	printf("nos visitados = %d\n", visited_counter);
+	printf("total de nos na rede = %d\n", network->total_nodes);
+	
 	return 0;
 }
