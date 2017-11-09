@@ -32,4 +32,6 @@ void freeList(struct Tier1 *head);
 
 void electedRoute(struct Graph *graph, long int dest);
 
+int invert(int type);
+
 #endif

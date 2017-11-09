@@ -112,6 +112,8 @@ int routeIsValid(int prevType, int currentType) {
 			return VALID;
 		else if(prevType == 3 && currentType == 3)
 			return VALID;
+		else if(currentType == 0) //if we are looking to a destination, the destination is marked with 0
+			return VALID;
         else 
             return INVALID;
 }
@@ -207,37 +209,43 @@ void freeList(struct Tier1 *head){
 void electedRoute(struct Graph *graph, long int dest){
 
     int V = graph->V; // Get the number of valid vertices in graph
-    int dist[V];      // dist values used to pick minimum weight edge in cut
+    int type[V];      // dist values used to pick minimum weight edge in cut
     int u = -1;
     struct AdjListNode* auxAdj = NULL;
     struct MinHeapNode* minHeapNode = NULL;
     long int id = -1;
-
+    long int position = 0;
+	long int v = 0;
     // minHeap represents set E
-    struct MinHeap* minHeap = createMinHeap(V);
+    struct MinHeap* minHeap = createMinHeap(graph->total_nodes);
 
     // Initialize min heap with all vertices. dist value of all vertices 
-    for (int v = 0; v < V; ++v) {
-        dist[v] = UNREACHABLE;
-        minHeap->array[v] = newMinHeapNode(v, dist[v]);
-        minHeap->pos[v] = v;
+    // minHeap->array é a priority queue, tem o tamanho igual ao numero de nós válidos, os elemenos do array são id's e os seus indices são a sua prioridade
+    // assim as operações heapify não estão a fazer operações desnecessárias
+    for (v = 0; v < V; ++v) {
+        type[v] = UNREACHABLE;
+        if(graph->array[v].head != NULL) {
+			minHeap->array[position] = newMinHeapNode(v, type[v]);
+			minHeap->pos[v] = position;
+			position++;
+		}
     }
 
     // Make dist value of src vertex as 0 so that it is extracted first
-    minHeap->array[dest] = newMinHeapNode(dest, dist[dest]);
-    minHeap->pos[dest]   = dest;
-    dist[dest] = 0;
-    decreaseKey(minHeap, dest, dist[dest]);
+    minHeap->array[dest] = newMinHeapNode(dest, type[dest]);
+    minHeap->pos[dest] = dest;
+    type[dest] = 0;
+    decreaseKey(minHeap, dest, type[dest]);
 
     // Initially size of min heap is equal to V
-    minHeap->size = V;
+    minHeap->size = position;
 
     // In the followin loop, min heap contains all nodes
     // whose shortest distance is not yet finalized.
     while (!isEmpty(minHeap)) {
-        // Extract the vertex with minimum distance value
+        // Extract the vertex with better value
         minHeapNode = extractMin(minHeap);
-        u = minHeapNode->v; // Store the extracted vertex number
+        u = minHeapNode->id; // Store the extracted vertex number
 
         // Traverse through all adjacent vertices of u (the extracted
         // vertex) and update their routes
@@ -253,13 +261,13 @@ void electedRoute(struct Graph *graph, long int dest){
 
             // 1º condition -> checks if the node is already been decided
             // 2º condition -> checks if the node is isolated (unecessary if the network is commercialy connected)
-            if( isInMinHeap(minHeap, id) && dist[u] != UNREACHABLE) {
-                if(routeIsValid(minHeapNode->type, auxAdj->type CORRIGIR -> ESTÁ MAL)) {
-
-                    se eu consigo chegar a um nó por 3, então o peso dele para mim é 1
-                    se eu consigo chegar a um nó por 1, então o peso dele para mim é 3
-                    se eu consigo chegar a um nó por 2, então o peso dele para mim é 2
-
+            // 3º condition -> is the new path better? 
+            if( isInMinHeap(minHeap, id) && type[u] != UNREACHABLE && invert(auxAdj->type)<type[id]) {
+                if(routeIsValid(invert(auxAdj->type),minHeapNode->type)) {
+					//a rota que o nó id utilizada para chegar ao destino neste momento é guardada (não definitiva)
+					type[id] = invert(auxAdj->type);
+					//se entramos aqui significa que a prioridade do nó = id, melhorou, altera-se a sua prioridade + heapify		
+					decreaseKey(minHeap, id, type[id]);
                 }
 
             }
@@ -269,6 +277,23 @@ void electedRoute(struct Graph *graph, long int dest){
         }
 
     }
+	//imprime a rotas eleitas por cada nó para o destino 
+	/**temporario?**/
+	printf("destino = %li\n", dest);
+	for(v = 0; v < MAX_GRAPH; v++)
+		if(graph->array[v].head != NULL)
+			printf("id = %li, tipo = %d\n", v, type[v]);
+	
+	return;
+}
 
-    return;
+//inverte a ligação
+int invert(int type) {
+	if(type == 1)
+		type = 3;
+	
+	else if(type == 3)
+		type = 1;
+	
+	return type;
 }

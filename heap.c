@@ -1,15 +1,26 @@
 #include "heap.h"
  
 // A utility function to create a new Min Heap Node
-struct MinHeapNode* newMinHeapNode(int v, int dist)
+struct MinHeapNode* newMinHeapNode(int v, int type)
 {
     struct MinHeapNode* minHeapNode = (struct MinHeapNode*) malloc(sizeof(struct MinHeapNode));
-    minHeapNode->v = v;
-    minHeapNode->dist = dist;
+    minHeapNode->id = v;
+    minHeapNode->type = type;
     return minHeapNode;
 }
  
 // A utility function to create a Min Heap
+
+/**minHeap->array[0]->id :::: id do nó como maior prioridade
+ * minHeap->pos[x] ::::: posição do nó de id = x, na minHeap->array[ ]
+ * se minHeap->pos[10] == 0, então minHeap->array[0]->id == 10, i.e. o nó 10 é o com maior prioridade
+ * 
+ * minHeap->size = [(tamanho total de nós) - (nós já definitivos)]
+ * 
+ * quando um nó se torna definitivo, troca-se a info de array[0] com array[size] (depois é feito heapify e as prioridades voltam a bater certo)
+ * e decrementa-se o minHeap->size, e nunca mais vais olhar para esse nó**/
+
+
 struct MinHeap* createMinHeap(int capacity) {
     struct MinHeap* minHeap = (struct MinHeap*) malloc(sizeof(struct MinHeap));
     minHeap->pos = (int *) malloc(capacity * sizeof(int));
@@ -38,11 +49,11 @@ void minHeapify(struct MinHeap* minHeap, int idx)
     right = 2 * idx + 2;
  
     if (left < minHeap->size &&
-        minHeap->array[left]->dist < minHeap->array[smallest]->dist )
+        minHeap->array[left]->type < minHeap->array[smallest]->type )
       smallest = left;
  
     if (right < minHeap->size &&
-        minHeap->array[right]->dist < minHeap->array[smallest]->dist )
+        minHeap->array[right]->type < minHeap->array[smallest]->type )
       smallest = right;
  
     if (smallest != idx)
@@ -52,8 +63,8 @@ void minHeapify(struct MinHeap* minHeap, int idx)
         struct MinHeapNode *idxNode = minHeap->array[idx];
  
         // Swap positions
-        minHeap->pos[smallestNode->v] = idx;
-        minHeap->pos[idxNode->v] = smallest;
+        minHeap->pos[smallestNode->id] = idx;
+        minHeap->pos[idxNode->id] = smallest;
  
         // Swap nodes
         swapMinHeapNode(&minHeap->array[smallest], &minHeap->array[idx]);
@@ -82,8 +93,8 @@ struct MinHeapNode* extractMin(struct MinHeap* minHeap)
     minHeap->array[0] = lastNode;
  
     // Update position of last node
-    minHeap->pos[root->v] = minHeap->size-1;
-    minHeap->pos[lastNode->v] = 0;
+    minHeap->pos[root->id] = minHeap->size-1;
+    minHeap->pos[lastNode->id] = 0;
  
     // Reduce heap size and heapify root
     --minHeap->size;
@@ -94,21 +105,21 @@ struct MinHeapNode* extractMin(struct MinHeap* minHeap)
  
 // Function to decreasy dist value of a given vertex v. This function
 // uses pos[] of min heap to get the current index of node in min heap
-void decreaseKey(struct MinHeap* minHeap, int v, int dist)
+void decreaseKey(struct MinHeap* minHeap, int v, int type)
 {
     // Get the index of v in  heap array
     int i = minHeap->pos[v];
  
     // Get the node and update its dist value
-    minHeap->array[i]->dist = dist;
+    minHeap->array[i]->type = type;
  
     // Travel up while the complete tree is not hepified.
     // This is a O(Logn) loop
-    while (i && minHeap->array[i]->dist < minHeap->array[(i - 1) / 2]->dist)
+    while (i && minHeap->array[i]->type < minHeap->array[(i - 1) / 2]->type)
     {
         // Swap this node with its parent
-        minHeap->pos[minHeap->array[i]->v] = (i-1)/2;
-        minHeap->pos[minHeap->array[(i-1)/2]->v] = i;
+        minHeap->pos[minHeap->array[i]->id] = (i-1)/2;
+        minHeap->pos[minHeap->array[(i-1)/2]->id] = i;
         swapMinHeapNode(&minHeap->array[i],  &minHeap->array[(i - 1) / 2]);
  
         // move to parent index

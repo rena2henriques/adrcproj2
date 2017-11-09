@@ -9,7 +9,7 @@
 
 // Structure to represent a min heap node
 struct MinHeapNode {
-    int  v;
+    int  id;
     int type;
 };
  
