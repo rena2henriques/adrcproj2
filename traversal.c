@@ -225,6 +225,9 @@ void electedRoute(struct Graph *graph, long int dest){
     for (v = 0; v < V; ++v) {
         type[v] = UNREACHABLE;
         if(graph->array[v].head != NULL) {
+			if(v == dest)
+				type[v] = 0;
+				
 			minHeap->array[position] = newMinHeapNode(v, type[v]);
 			minHeap->pos[v] = position;
 			position++;
@@ -232,9 +235,9 @@ void electedRoute(struct Graph *graph, long int dest){
     }
 
     // Make dist value of src vertex as 0 so that it is extracted first
-    minHeap->array[dest] = newMinHeapNode(dest, type[dest]);
+    /*minHeap->array[dest] = newMinHeapNode(dest, type[dest]);
     minHeap->pos[dest] = dest;
-    type[dest] = 0;
+    type[dest] = 0;*/
     decreaseKey(minHeap, dest, type[dest]);
 
     // Initially size of min heap is equal to V
