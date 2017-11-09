@@ -17,6 +17,7 @@ struct Graph* createGraph(long int V) {
 
     graph->V = V;
     graph->total_nodes = 0;
+    graph->E = 0;
  
     // Create an array of adjacency lists.  Size of array will be V
     graph->array = (struct AdjList*) malloc(V * sizeof(struct AdjList));
@@ -96,10 +97,12 @@ struct Graph* fillGraph(int argc, char const *argv[]) {
     }
 
     while (!feof(file)) {
-        fgets(temp, sizeof(temp), file);
+        if(fgets(temp, sizeof(temp), file) == NULL)
+            continue;
 
-        // TESTAR O SSCANF PARA O CASO QUE NOS DÃO UM FICHEIRO MAL FEITO
-        sscanf(temp, "%li %li %d", &src, &dest, &type);
+        if(sscanf(temp, "%li %li %d", &src, &dest, &type) != 3)
+            continue;
+
 		if(graph->array[src].head == NULL) //absolute new node in this graph
 			graph->total_nodes++;		   //if the node re-appears on the file, will not be incremented again
 
@@ -119,3 +122,29 @@ struct Graph* fillGraph(int argc, char const *argv[]) {
 }
 
 
+/*Free the graph*/
+void freeGraph(struct Graph *graph) {
+    if(graph != NULL) {
+        if(graph->array != NULL) {
+
+            int v;
+            struct AdjListNode *tmp = NULL;
+            /*Free up the nodes*/
+            for (v = 0; v < MAX_GRAPH; v++) {
+
+                tmp = graph->array[v].head;
+
+                while (graph->array[v].head != NULL) {
+
+                    tmp = graph->array[v].head;
+                    graph->array[v].head = tmp->next;
+                    free(tmp);
+                }
+            }
+            /*Free the adjacency list array*/
+            free(graph->array);
+        }
+        /*Free the graph*/
+        free(graph);
+    }
+}

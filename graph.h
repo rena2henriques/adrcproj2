@@ -42,4 +42,7 @@ void printGraph(struct Graph* graph);
 
 struct Graph* fillGraph(int argc, char const *argv[]);
 
+void freeGraph(struct Graph *graph);
+
+
 #endif

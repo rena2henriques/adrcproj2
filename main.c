@@ -6,12 +6,14 @@ int main(int argc, char const *argv[])
 	// gets a file with the network description, creates the graph and fill it correctly
 	struct Graph* network = fillGraph(argc, argv);
 
-	//printGraph(network);
+	#ifdef DEBUG
+	printGraph(network);
+	#endif
 
 	if (checkCycle(network) == TRUE) {
-		printf("\nThe network has customer cycles!\n");
+		printf("The network has customer cycles!\n");
 	} else {
-		printf("\nThe network doesn't have customer cycles!\n");
+		printf("The network doesn't have customer cycles!\n");
 	}
 
 	if(commercially_connected(network))
@@ -19,5 +21,7 @@ int main(int argc, char const *argv[])
 	else
 		printf("The network isn't commercially connected\n");
 	
+	freeGraph(network);
+
 	return 0;
 }
