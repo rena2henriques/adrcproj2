@@ -10,7 +10,7 @@
 // Structure to represent a min heap node
 struct MinHeapNode {
     int  v;
-    int type;
+    int dist;
 };
  
 // Structure to represent a min heap

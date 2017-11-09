@@ -204,7 +204,7 @@ void freeList(struct Tier1 *head){
 }
 
 
-void electedRoute(struct Graph *graph, long int dest){
+/*void electedRoute(struct Graph *graph, long int dest){
 
     int V = graph->V; // Get the number of valid vertices in graph
     int dist[V];      // dist values used to pick minimum weight edge in cut
@@ -272,3 +272,4 @@ void electedRoute(struct Graph *graph, long int dest){
 
     return;
 }
+*/
