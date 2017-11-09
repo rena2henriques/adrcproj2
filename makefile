@@ -20,10 +20,10 @@ CC = gcc
 CFLAGS = -Wall -c -g
 
 #  Sources
-SOURCES = graph.c traversal.c utils.c main.c
+SOURCES = graph.c traversal.c heap.c utils.c main.c
 
 #  Objects
-OBJECTS = graph.o traversal.o utils.o main.o
+OBJECTS = graph.o traversal.o heap.o utils.o main.o
 
 interRouting: $(OBJECTS)
 	gcc -o $@ $(OBJECTS)
@@ -33,6 +33,9 @@ graph.o: graph.c graph.h
 
 traversal.o: traversal.c traversal.h
 	$(CC) $(CFLAGS) $(DEBUG) traversal.c
+
+heap.o: heap.c heap.h
+	$(CC) $(CFLAGS) $(DEBUG) heap.c
 
 utils.o: utils.c utils.h
 	$(CC) $(CFLAGS) $(DEBUG) utils.c

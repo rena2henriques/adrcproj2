@@ -202,3 +202,73 @@ void freeList(struct Tier1 *head){
 
     return;
 }
+
+
+void electedRoute(struct Graph *graph, long int dest){
+
+    int V = graph->V; // Get the number of valid vertices in graph
+    int dist[V];      // dist values used to pick minimum weight edge in cut
+    int u = -1;
+    struct AdjListNode* auxAdj = NULL;
+    struct MinHeapNode* minHeapNode = NULL;
+    long int id = -1;
+
+    // minHeap represents set E
+    struct MinHeap* minHeap = createMinHeap(V);
+
+    // Initialize min heap with all vertices. dist value of all vertices 
+    for (int v = 0; v < V; ++v) {
+        dist[v] = UNREACHABLE;
+        minHeap->array[v] = newMinHeapNode(v, dist[v]);
+        minHeap->pos[v] = v;
+    }
+
+    // Make dist value of src vertex as 0 so that it is extracted first
+    minHeap->array[dest] = newMinHeapNode(dest, dist[dest]);
+    minHeap->pos[dest]   = dest;
+    dist[dest] = 0;
+    decreaseKey(minHeap, dest, dist[dest]);
+
+    // Initially size of min heap is equal to V
+    minHeap->size = V;
+
+    // In the followin loop, min heap contains all nodes
+    // whose shortest distance is not yet finalized.
+    while (!isEmpty(minHeap)) {
+        // Extract the vertex with minimum distance value
+        minHeapNode = extractMin(minHeap);
+        u = minHeapNode->v; // Store the extracted vertex number
+
+        // Traverse through all adjacent vertices of u (the extracted
+        // vertex) and update their routes
+        auxAdj = graph->array[u].head;
+
+        // for the nodes that are not included in our network
+        if(auxAdj == NULL)
+            continue;
+
+        while(auxAdj != NULL) {
+
+            id = auxAdj->id;
+
+            // 1º condition -> checks if the node is already been decided
+            // 2º condition -> checks if the node is isolated (unecessary if the network is commercialy connected)
+            if( isInMinHeap(minHeap, id) && dist[u] != UNREACHABLE) {
+                if(routeIsValid(minHeapNode->type, auxAdj->type CORRIGIR -> ESTÁ MAL)) {
+
+                    se eu consigo chegar a um nó por 3, então o peso dele para mim é 1
+                    se eu consigo chegar a um nó por 1, então o peso dele para mim é 3
+                    se eu consigo chegar a um nó por 2, então o peso dele para mim é 2
+
+                }
+
+            }
+
+
+            auxAdj = auxAdj->next;
+        }
+
+    }
+
+    return;
+}

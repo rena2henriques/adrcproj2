@@ -2,12 +2,14 @@
 #define TRAVERSAL_H
 
 #include "graph.h"
+#include "heap.h"
 #include "utils.h"
 
 #define TRUE 1
 #define FALSE 0
 #define VALID 1
 #define INVALID 0
+#define UNREACHABLE 4
 
 struct Tier1 {
 	long int id;
@@ -27,5 +29,7 @@ int commercially_connected(struct Graph *graph);
 int checkTier1Connections(struct Tier1 **head, struct Graph *graph, long int id);
 
 void freeList(struct Tier1 *head);
+
+void electedRoute(struct Graph *graph, long int dest);
 
 #endif

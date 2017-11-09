@@ -20,6 +20,8 @@ int main(int argc, char const *argv[])
 		printf("The network is commercially connected\n");
 	else
 		printf("The network isn't commercially connected\n");
+
+	electedRoute(network, 5);
 	
 	freeGraph(network);
 
