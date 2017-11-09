@@ -21,7 +21,7 @@ int main(int argc, char const *argv[])
 	else
 		printf("The network isn't commercially connected\n");
 
-	electedRoute(network, 2);
+	electedRoute(network, 1);
 	
 	freeGraph(network);
 

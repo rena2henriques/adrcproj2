@@ -216,8 +216,10 @@ void electedRoute(struct Graph *graph, long int dest){
     long int id = -1;
     long int position = 0;
 	long int v = 0;
-    // minHeap represents set E
-    struct MinHeap* minHeap = createMinHeap(graph->total_nodes);
+    // graph->V size of pos vector
+    // graph->total_nodes size of the heap (only contains relevant nodes
+    // antigamente era isto => struct MinHeap* minHeap = createMinHeap(graph->total_nodes); DAVA SEG FAULT NO FILE DO PROF
+    struct MinHeap* minHeap = createMinHeap(graph->V, graph->total_nodes);
 
     // Initialize min heap with all vertices. dist value of all vertices 
     // minHeap->array é a priority queue, tem o tamanho igual ao numero de nós válidos, os elemenos do array são id's e os seus indices são a sua prioridade
@@ -225,7 +227,7 @@ void electedRoute(struct Graph *graph, long int dest){
     for (v = 0; v < V; ++v) {
         type[v] = UNREACHABLE;
         if(graph->array[v].head != NULL) {
-			if(v == dest)
+			if(v == dest) //creates top priority for destination node, needed for 1st iteration of algorithm
 				type[v] = 0;
 				
 			minHeap->array[position] = newMinHeapNode(v, type[v]);
@@ -237,7 +239,8 @@ void electedRoute(struct Graph *graph, long int dest){
     // Make dist value of src vertex as 0 so that it is extracted first
     /*minHeap->array[dest] = newMinHeapNode(dest, type[dest]);
     minHeap->pos[dest] = dest;
-    type[dest] = 0;*/
+    type[dest] = 0; COMENTADO PORQUE É MAIS FACIL FAZER ISTO LOGO NA INICIALIZAÇÃO*/
+    
     decreaseKey(minHeap, dest, type[dest]);
 
     // Initially size of min heap is equal to V
