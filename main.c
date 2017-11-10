@@ -8,6 +8,9 @@ int main(int argc, char const *argv[]) {
 	int peer = 0;
 	int customer = 0;
 
+	// flag of the state of the commercial connection
+	int commercialFlag = 0;
+
 	// gets a file with the network description, creates the graph and fill it correctly
 	struct Graph* network = fillGraph(argc, argv);
 
@@ -17,16 +20,21 @@ int main(int argc, char const *argv[]) {
 
 	if (checkCycle(network) == TRUE) {
 		printf("The network has customer cycles!\n");
+		printf("It will not converge!\n");
+		return 0;
 	} else {
 		printf("The network doesn't have customer cycles!\n");
 	}
 
-	if(commercially_connected(network))
+	if((commercialFlag = commercially_connected(network)))
 		printf("The network is commercially connected\n");
 	else
 		printf("The network isn't commercially connected\n");
 
-	electedRoute(network, 6, &provider, &peer, &customer);
+	for(int i = 0; i < MAX_GRAPH; i++){
+		if(network->array[i].head != NULL)
+			electedRoute(network, i, &provider, &peer, &customer, commercialFlag);
+	}
 	
 	printf("Statistics:\n");
 	printf("Nº of providers: %d\n", provider);

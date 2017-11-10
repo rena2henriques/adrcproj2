@@ -206,7 +206,7 @@ void freeList(struct Tier1 *head){
 }
 
 
-void electedRoute(struct Graph *graph, long int dest, int *provider, int *peer, int *customer){
+void electedRoute(struct Graph *graph, long int dest, int *provider, int *peer, int *customer, int commercialFlag){
 
     int V = graph->V; // Get the number of valid vertices in graph
     int type[V];      // dist values used to pick minimum weight edge in cut
@@ -261,6 +261,15 @@ void electedRoute(struct Graph *graph, long int dest, int *provider, int *peer, 
         if(auxAdj == NULL)
             continue;
 
+        // for statistics data
+        if(type[u] == 3)
+            (*provider)++;
+        else if(type[u] == 2)
+            (*peer)++;
+        else if(type[u] == 1)
+            (*customer)++;
+
+
         while(auxAdj != NULL) {
 
             id = auxAdj->id;
@@ -272,14 +281,6 @@ void electedRoute(struct Graph *graph, long int dest, int *provider, int *peer, 
                 if(routeIsValid(invert(auxAdj->type),minHeapNode->type)) {
 					//a rota que o nó id utilizada para chegar ao destino neste momento é guardada (não definitiva)
 					type[id] = invert(auxAdj->type);
-
-                    // for statistics data
-                    if(type[id] == 3)
-                        (*provider)++;
-                    else if(type[id] == 2)
-                        (*peer)++;
-                    else if(type[id] == 1)
-                        (*customer)++;
 
 					//se entramos aqui significa que a prioridade do nó = id, melhorou, altera-se a sua prioridade + heapify		
 					decreaseKey(minHeap, id, type[id]);
