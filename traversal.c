@@ -216,6 +216,7 @@ void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, un
     long int id = -1;
     long int position = 0;
 	long int v = 0;
+
     // graph->V size of pos vector
     // graph->total_nodes size of the heap (only contains relevant nodes
     // antigamente era isto => struct MinHeap* minHeap = createMinHeap(graph->total_nodes); DAVA SEG FAULT NO FILE DO PROF
@@ -224,8 +225,10 @@ void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, un
     // Initialize min heap with all vertices. dist value of all vertices 
     // minHeap->array é a priority queue, tem o tamanho igual ao numero de nós válidos, os elemenos do array são id's e os seus indices são a sua prioridade
     // assim as operações heapify não estão a fazer operações desnecessárias
-    for (v = 0; v < V; ++v) {
+    for(v = 0; v < V; ++v) {
+
         type[v] = UNREACHABLE;
+
         if(graph->array[v].head != NULL) {
 			if(v == dest) //creates top priority for destination node, needed for 1st iteration of algorithm
 				type[v] = 0;
@@ -235,7 +238,7 @@ void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, un
 			position++;
 		}
     }
-
+    
     // Make dist value of src vertex as 0 so that it is extracted first
     /*minHeap->array[dest] = newMinHeapNode(dest, type[dest]);
     minHeap->pos[dest] = dest;
@@ -267,7 +270,6 @@ void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, un
             (*provider) += minHeap->size + 1; // +1 because of the provider node we took from this cycle
 
             freeHeap(minHeap);
-            
             return;
         }
 

@@ -8,6 +8,8 @@ int main(int argc, char const *argv[]) {
 	unsigned int peer = 0;
 	unsigned int customer = 0;
 
+	int i = 0;
+
 	// flag of the state of the commercial connection
 	int commercialFlag = 0;
 
@@ -31,10 +33,12 @@ int main(int argc, char const *argv[]) {
 	else
 		printf("The network isn't commercially connected\n");
 
-	for(int i = 0; i < MAX_GRAPH; i++){
+	for(i = 0; i < MAX_GRAPH; i++){
 		if(network->array[i].head != NULL)
 			electedRoute(network, i, &provider, &peer, &customer, commercialFlag);
 	}
+
+	//electedRoute(network, 1, &provider, &peer, &customer, commercialFlag);
 	
 	printf("Statistics:\n");
 	printf("Nº of providers: %d\n", provider);
