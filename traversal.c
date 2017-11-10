@@ -206,7 +206,7 @@ void freeList(struct Tier1 *head){
 }
 
 
-void electedRoute(struct Graph *graph, long int dest, int *provider, int *peer, int *customer, int commercialFlag){
+void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, unsigned int *peer, unsigned int *customer, int commercialFlag){
 
     int V = graph->V; // Get the number of valid vertices in graph
     int type[V];      // dist values used to pick minimum weight edge in cut
@@ -261,13 +261,20 @@ void electedRoute(struct Graph *graph, long int dest, int *provider, int *peer, 
         if(auxAdj == NULL)
             continue;
 
+        // if the network is commercialy connected and we get a provider route as Min
+        // then it means that all the other nodes in the heap are providers
+        if(commercialFlag == 1 && type[u] == 3){
+            (*provider) += minHeap->size + 1; // +1 because of the provider node we took from this cycle
+            return;
+        }
+
         // for statistics data
-        if(type[u] == 3)
-            (*provider)++;
+        if(type[u] == 1)
+            (*customer)++;
         else if(type[u] == 2)
             (*peer)++;
-        else if(type[u] == 1)
-            (*customer)++;
+        else if(type[u] == 3)
+            (*provider)++;
 
 
         while(auxAdj != NULL) {

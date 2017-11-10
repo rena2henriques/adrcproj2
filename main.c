@@ -4,9 +4,9 @@
 int main(int argc, char const *argv[]) {
 
 	// counter of the types of routes <- might be needed to change to long int
-	int provider = 0;
-	int peer = 0;
-	int customer = 0;
+	unsigned int provider = 0;
+	unsigned int peer = 0;
+	unsigned int customer = 0;
 
 	// flag of the state of the commercial connection
 	int commercialFlag = 0;

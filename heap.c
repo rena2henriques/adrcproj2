@@ -135,3 +135,11 @@ int isInMinHeap(struct MinHeap *minHeap, int v)
      return 1;
    return 0;
 }
+
+
+/*void freeHeap(struct MinHeap* minHeap){
+
+     while (!isEmpty(minHeap)) {
+
+    }
+}*/
