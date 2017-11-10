@@ -30,6 +30,8 @@ int checkTier1Connections(struct Tier1 **head, struct Graph *graph, long int id)
 
 void freeList(struct Tier1 *head);
 
-void electedRoute(struct Graph *graph, long int dest);
+void electedRoute(struct Graph *graph, long int dest, int *provider, int *peer, int *customer);
+
+int invert(int type);
 
 #endif

@@ -9,8 +9,8 @@
 
 // Structure to represent a min heap node
 struct MinHeapNode {
-    int  v;
-    int dist;
+    int  id;
+    int type;
 };
  
 // Structure to represent a min heap
@@ -21,9 +21,9 @@ struct MinHeap {
     struct MinHeapNode **array;
 };
 
-struct MinHeapNode* newMinHeapNode(int v, int dist);
+struct MinHeapNode* newMinHeapNode(int v, int type);
 
-struct MinHeap* createMinHeap(int capacity);
+struct MinHeap* createMinHeap(int capacity, int heap_capacity);
 
 void swapMinHeapNode(struct MinHeapNode** a, struct MinHeapNode** b);
 
@@ -33,7 +33,7 @@ int isEmpty(struct MinHeap* minHeap);
 
 struct MinHeapNode* extractMin(struct MinHeap* minHeap);
 
-void decreaseKey(struct MinHeap* minHeap, int v, int dist);
+void decreaseKey(struct MinHeap* minHeap, int v, int type);
 
 int isInMinHeap(struct MinHeap *minHeap, int v);
 

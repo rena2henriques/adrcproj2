@@ -62,7 +62,7 @@ int checkCycle(struct Graph* graph) {
     return FALSE;
 }
 
-
+// Não é usado, mas em homenagem ao tempo que perdemos a bater tecla decidimos deixar
 void DFS (int v, int visited[MAX_GRAPH], int *visitedCounter,struct Graph* graph, int prevType) {//,tier1List) {
 
     // set the node as visited
@@ -111,6 +111,8 @@ int routeIsValid(int prevType, int currentType) {
 		else if(prevType == 3 && currentType == 2)
 			return VALID;
 		else if(prevType == 3 && currentType == 3)
+			return VALID;
+		else if(currentType == 0) //if we are looking to a destination, the destination is marked with 0
 			return VALID;
         else 
             return INVALID;
@@ -204,40 +206,52 @@ void freeList(struct Tier1 *head){
 }
 
 
-/*void electedRoute(struct Graph *graph, long int dest){
+void electedRoute(struct Graph *graph, long int dest, int *provider, int *peer, int *customer){
 
     int V = graph->V; // Get the number of valid vertices in graph
-    int dist[V];      // dist values used to pick minimum weight edge in cut
+    int type[V];      // dist values used to pick minimum weight edge in cut
     int u = -1;
     struct AdjListNode* auxAdj = NULL;
     struct MinHeapNode* minHeapNode = NULL;
     long int id = -1;
-
-    // minHeap represents set E
-    struct MinHeap* minHeap = createMinHeap(V);
+    long int position = 0;
+	long int v = 0;
+    // graph->V size of pos vector
+    // graph->total_nodes size of the heap (only contains relevant nodes
+    // antigamente era isto => struct MinHeap* minHeap = createMinHeap(graph->total_nodes); DAVA SEG FAULT NO FILE DO PROF
+    struct MinHeap* minHeap = createMinHeap(graph->V, graph->total_nodes);
 
     // Initialize min heap with all vertices. dist value of all vertices 
-    for (int v = 0; v < V; ++v) {
-        dist[v] = UNREACHABLE;
-        minHeap->array[v] = newMinHeapNode(v, dist[v]);
-        minHeap->pos[v] = v;
+    // minHeap->array é a priority queue, tem o tamanho igual ao numero de nós válidos, os elemenos do array são id's e os seus indices são a sua prioridade
+    // assim as operações heapify não estão a fazer operações desnecessárias
+    for (v = 0; v < V; ++v) {
+        type[v] = UNREACHABLE;
+        if(graph->array[v].head != NULL) {
+			if(v == dest) //creates top priority for destination node, needed for 1st iteration of algorithm
+				type[v] = 0;
+				
+			minHeap->array[position] = newMinHeapNode(v, type[v]);
+			minHeap->pos[v] = position;
+			position++;
+		}
     }
 
     // Make dist value of src vertex as 0 so that it is extracted first
-    minHeap->array[dest] = newMinHeapNode(dest, dist[dest]);
-    minHeap->pos[dest]   = dest;
-    dist[dest] = 0;
-    decreaseKey(minHeap, dest, dist[dest]);
+    /*minHeap->array[dest] = newMinHeapNode(dest, type[dest]);
+    minHeap->pos[dest] = dest;
+    type[dest] = 0; COMENTADO PORQUE É MAIS FACIL FAZER ISTO LOGO NA INICIALIZAÇÃO*/
+    
+    decreaseKey(minHeap, dest, type[dest]);
 
     // Initially size of min heap is equal to V
-    minHeap->size = V;
+    minHeap->size = position;
 
     // In the followin loop, min heap contains all nodes
     // whose shortest distance is not yet finalized.
     while (!isEmpty(minHeap)) {
-        // Extract the vertex with minimum distance value
+        // Extract the vertex with better value
         minHeapNode = extractMin(minHeap);
-        u = minHeapNode->v; // Store the extracted vertex number
+        u = minHeapNode->id; // Store the extracted vertex number
 
         // Traverse through all adjacent vertices of u (the extracted
         // vertex) and update their routes
@@ -253,23 +267,49 @@ void freeList(struct Tier1 *head){
 
             // 1º condition -> checks if the node is already been decided
             // 2º condition -> checks if the node is isolated (unecessary if the network is commercialy connected)
-            if( isInMinHeap(minHeap, id) && dist[u] != UNREACHABLE) {
-                if(routeIsValid(minHeapNode->type, auxAdj->type CORRIGIR -> ESTÁ MAL)) {
+            // 3º condition -> is the new path better? 
+            if( isInMinHeap(minHeap, id) && type[u] != UNREACHABLE && invert(auxAdj->type)<type[id]) {
+                if(routeIsValid(invert(auxAdj->type),minHeapNode->type)) {
+					//a rota que o nó id utilizada para chegar ao destino neste momento é guardada (não definitiva)
+					type[id] = invert(auxAdj->type);
 
-                    se eu consigo chegar a um nó por 3, então o peso dele para mim é 1
-                    se eu consigo chegar a um nó por 1, então o peso dele para mim é 3
-                    se eu consigo chegar a um nó por 2, então o peso dele para mim é 2
+                    // for statistics data
+                    if(type[id] == 3)
+                        (*provider)++;
+                    else if(type[id] == 2)
+                        (*peer)++;
+                    else if(type[id] == 1)
+                        (*customer)++;
 
+					//se entramos aqui significa que a prioridade do nó = id, melhorou, altera-se a sua prioridade + heapify		
+					decreaseKey(minHeap, id, type[id]);
                 }
 
             }
-
 
             auxAdj = auxAdj->next;
         }
 
     }
 
-    return;
+    #ifdef DEBUG
+	//imprime a rotas eleitas por cada nó para o destino 
+	printf("destino = %li\n", dest);
+	for(v = 0; v < MAX_GRAPH; v++)
+		if(graph->array[v].head != NULL)
+			printf("id = %li, tipo = %d\n", v, type[v]);
+    #endif
+	
+	return;
 }
-*/
+
+//inverte a ligação
+int invert(int type) {
+	if(type == 1)
+		type = 3;
+	
+	else if(type == 3)
+		type = 1;
+	
+	return type;
+}
