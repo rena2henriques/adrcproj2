@@ -22,10 +22,13 @@ struct MinHeapNode* newMinHeapNode(int v, int type)
 
 
 struct MinHeap* createMinHeap(int capacity, int heap_capacity) {
-    struct MinHeap* minHeap = (struct MinHeap*) malloc(sizeof(struct MinHeap));
+    struct MinHeap* minHeap = NULL;
+    minHeap = (struct MinHeap*) malloc(sizeof(struct MinHeap));
+    minHeap->pos = NULL;
     minHeap->pos = (int *) malloc(capacity * sizeof(int));
     minHeap->size = 0;
     minHeap->capacity = heap_capacity;
+    minHeap->array = NULL;
     minHeap->array = (struct MinHeapNode**) malloc(heap_capacity * sizeof(struct MinHeapNode*));
     return minHeap;
 }
@@ -91,7 +94,7 @@ struct MinHeapNode* extractMin(struct MinHeap* minHeap)
     // Replace root node with last node
     struct MinHeapNode* lastNode = minHeap->array[minHeap->size - 1];
     minHeap->array[0] = lastNode;
- 
+	minHeap->array[minHeap->size - 1] = root;
     // Update position of last node
     minHeap->pos[root->id] = minHeap->size-1;
     minHeap->pos[lastNode->id] = 0;
@@ -141,11 +144,13 @@ void freeHeap(struct MinHeap* minHeap){
 
     int i = 0;
 
+
     for (i = 0; i < minHeap->capacity; i++) {
         if(minHeap->array[i]) {
             free(minHeap->array[i]);
             minHeap->array[i] = NULL; 
         }
+
     }
 
     free(minHeap->array);

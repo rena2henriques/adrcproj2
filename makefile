@@ -17,7 +17,7 @@
 CC = gcc
 
 #  Compiler Flags
-CFLAGS = -Wall -c -g
+CFLAGS = -Wall -c
 
 #  Sources
 SOURCES = graph.c traversal.c heap.c utils.c main.c

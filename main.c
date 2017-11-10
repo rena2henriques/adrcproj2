@@ -8,7 +8,9 @@ int main(int argc, char const *argv[]) {
 	unsigned int peer = 0;
 	unsigned int customer = 0;
 
+
 	int i = 0;
+
 
 	// flag of the state of the commercial connection
 	int commercialFlag = 0;
@@ -36,6 +38,8 @@ int main(int argc, char const *argv[]) {
 	for(i = 0; i < MAX_GRAPH; i++){
 		if(network->array[i].head != NULL)
 			electedRoute(network, i, &provider, &peer, &customer, commercialFlag);
+		/*printf("counter = %li\n", counter);
+		counter++;*/
 	}
 
 	//electedRoute(network, 1, &provider, &peer, &customer, commercialFlag);
