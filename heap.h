@@ -37,4 +37,6 @@ void decreaseKey(struct MinHeap* minHeap, int v, int type);
 
 int isInMinHeap(struct MinHeap *minHeap, int v);
 
+void freeHeap(struct MinHeap* minHeap);
+
 #endif

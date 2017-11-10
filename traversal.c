@@ -265,6 +265,9 @@ void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, un
         // then it means that all the other nodes in the heap are providers
         if(commercialFlag == 1 && type[u] == 3){
             (*provider) += minHeap->size + 1; // +1 because of the provider node we took from this cycle
+
+            freeHeap(minHeap);
+            
             return;
         }
 
@@ -308,6 +311,8 @@ void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, un
 			printf("id = %li, tipo = %d\n", v, type[v]);
     #endif
 	
+    freeHeap(minHeap);
+
 	return;
 }
 

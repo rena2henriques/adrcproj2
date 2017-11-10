@@ -25,7 +25,7 @@ struct MinHeap* createMinHeap(int capacity, int heap_capacity) {
     struct MinHeap* minHeap = (struct MinHeap*) malloc(sizeof(struct MinHeap));
     minHeap->pos = (int *) malloc(capacity * sizeof(int));
     minHeap->size = 0;
-    minHeap->capacity = capacity;
+    minHeap->capacity = heap_capacity;
     minHeap->array = (struct MinHeapNode**) malloc(heap_capacity * sizeof(struct MinHeapNode*));
     return minHeap;
 }
@@ -137,9 +137,16 @@ int isInMinHeap(struct MinHeap *minHeap, int v)
 }
 
 
-/*void freeHeap(struct MinHeap* minHeap){
+void freeHeap(struct MinHeap* minHeap){
 
-     while (!isEmpty(minHeap)) {
+    int i = 0;
 
+    for (i = 0; i < minHeap->capacity; i++) {
+        if(minHeap->array[i] != NULL)
+            free(minHeap->array[i]); 
     }
-}*/
+
+    free(minHeap->array);
+    free(minHeap->pos);
+    free(minHeap);
+}
