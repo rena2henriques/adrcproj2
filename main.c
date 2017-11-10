@@ -7,8 +7,11 @@ int main(int argc, char const *argv[]) {
 	unsigned int provider = 0;
 	unsigned int peer = 0;
 	unsigned int customer = 0;
-	long int counter=0;
-	int i=0;
+
+
+	int i = 0;
+
+
 	// flag of the state of the commercial connection
 	int commercialFlag = 0;
 
@@ -38,6 +41,8 @@ int main(int argc, char const *argv[]) {
 		/*printf("counter = %li\n", counter);
 		counter++;*/
 	}
+
+	//electedRoute(network, 1, &provider, &peer, &customer, commercialFlag);
 	
 	printf("Statistics:\n");
 	printf("Nº of providers: %d\n", provider);

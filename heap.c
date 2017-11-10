@@ -144,14 +144,21 @@ void freeHeap(struct MinHeap* minHeap){
 
     int i = 0;
 
-    for (i = minHeap->capacity; i < minHeap->capacity; i++) {
-        if(minHeap->array[i] != NULL){
-            free(minHeap->array[i]); 
-            minHeap->array[i] = NULL;
-		}
+
+    for (i = 0; i < minHeap->capacity; i++) {
+        if(minHeap->array[i]) {
+            free(minHeap->array[i]);
+            minHeap->array[i] = NULL; 
+        }
+
     }
 
     free(minHeap->array);
+    minHeap->array = NULL;
     free(minHeap->pos);
+    minHeap->pos = NULL;
     free(minHeap);
+    minHeap = NULL;
+
+    return;
 }
