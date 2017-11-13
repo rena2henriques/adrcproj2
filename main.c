@@ -11,12 +11,18 @@ int main(int argc, char const *argv[]) {
 
 	int i = 0;
 
-
 	// flag of the state of the commercial connection
 	int commercialFlag = 0;
 
 	// gets a file with the network description, creates the graph and fill it correctly
 	struct Graph* network = fillGraph(argc, argv);
+
+	// graph->V size of pos vector
+    // graph->total_nodes size of the heap (only contains relevant nodes
+    // antigamente era isto => struct MinHeap* minHeap = createMinHeap(graph->total_nodes); DAVA SEG FAULT NO FILE DO PROF
+    struct MinHeap* minHeap = NULL;
+    minHeap = createMinHeap(network->V, network->total_nodes);
+    
 
 	#ifdef DEBUG
 	printGraph(network);
@@ -37,17 +43,22 @@ int main(int argc, char const *argv[]) {
 
 	for(i = 0; i < MAX_GRAPH; i++){
 		if(network->array[i].head != NULL)
-			electedRoute(network, i, &provider, &peer, &customer, commercialFlag);
-		/*printf("counter = %li\n", counter);
-		counter++;*/
+			electedRoute(network, i, &provider, &peer, &customer, commercialFlag, minHeap);
 	}
 
-	//electedRoute(network, 1, &provider, &peer, &customer, commercialFlag);
+	// electedRoute(network, 42, &provider, &peer, &customer, commercialFlag);
 	
 	printf("Statistics:\n");
 	printf("Nº of providers: %d\n", provider);
 	printf("Nº of peer: %d\n", peer);
 	printf("Nº of customer: %d\n", customer);
+
+	free(minHeap->array);
+    minHeap->array = NULL;
+    free(minHeap->pos);
+    minHeap->pos = NULL;
+    free(minHeap);
+    minHeap = NULL;
 
 	freeGraph(network);
 

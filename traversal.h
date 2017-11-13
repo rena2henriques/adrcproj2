@@ -11,6 +11,8 @@
 #define INVALID 0
 #define UNREACHABLE 4
 
+#define INVERT 
+
 struct Tier1 {
 	long int id;
 	struct Tier1 *next;
@@ -30,8 +32,6 @@ int checkTier1Connections(struct Tier1 **head, struct Graph *graph, long int id)
 
 void freeList(struct Tier1 *head);
 
-void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, unsigned int *peer, unsigned int *customer, int commercialFlag);
-
-int invert(int type);
+void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, unsigned int *peer, unsigned int *customer, int commercialFlag,  struct MinHeap* minHeap);
 
 #endif

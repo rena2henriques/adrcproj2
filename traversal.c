@@ -1,5 +1,14 @@
 #include "traversal.h"
 
+//inverte a ligação
+static inline int invert(int type) {
+    if(type == 1)
+        return 3;
+    else if(type == 3)
+        return 1;
+    return type;
+}
+
 // COMPLEXITY O(V+E)
 // goes through the DFS tree to check cycles
 int checkCycleRec(int v, int visited[MAX_GRAPH], int stack[MAX_GRAPH], struct Graph* graph) {
@@ -101,19 +110,18 @@ void DFS (int v, int visited[MAX_GRAPH], int *visitedCounter,struct Graph* graph
 } 
 
 // checks if a certain the route is valid
-int routeIsValid(int prevType, int currentType) {
-		if(prevType == 1 && currentType == 1)
+int routeIsValid(int prevType, int currentType) {   
+        if(currentType == 0) //if we are looking to a destination, the destination is marked with 0
+            return VALID;
+		else if(prevType == 1 && currentType == 1)
 			return VALID;
 		else if(prevType == 2 && currentType == 1)
 			return VALID;
-		else if(prevType == 3 && currentType == 1)
-			return VALID;
-		else if(prevType == 3 && currentType == 2)
-			return VALID;
-		else if(prevType == 3 && currentType == 3)
-			return VALID;
-		else if(currentType == 0) //if we are looking to a destination, the destination is marked with 0
-			return VALID;
+		else if(prevType == 3)
+            if (currentType != 4)
+                return VALID;
+            else
+                return INVALID;
         else 
             return INVALID;
 }
@@ -206,7 +214,7 @@ void freeList(struct Tier1 *head){
 }
 
 
-void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, unsigned int *peer, unsigned int *customer, int commercialFlag){
+void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, unsigned int *peer, unsigned int *customer, int commercialFlag, struct MinHeap* minHeap){
 
     int V = graph->V; // Get the number of valid vertices in graph
     int type[V];      // dist values used to pick minimum weight edge in cut
@@ -216,12 +224,13 @@ void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, un
     long int id = -1;
     long int position = 0;
 	long int v = 0;
+    int invType = 0;
 
     // graph->V size of pos vector
     // graph->total_nodes size of the heap (only contains relevant nodes
     // antigamente era isto => struct MinHeap* minHeap = createMinHeap(graph->total_nodes); DAVA SEG FAULT NO FILE DO PROF
-    struct MinHeap* minHeap = NULL;
-    minHeap = createMinHeap(graph->V, graph->total_nodes);
+    // struct MinHeap* minHeap = NULL;
+    // minHeap = createMinHeap(graph->V, graph->total_nodes);
     
     // Initialize min heap with all vertices. dist value of all vertices 
     // minHeap->array é a priority queue, tem o tamanho igual ao numero de nós válidos, os elemenos do array são id's e os seus indices são a sua prioridade
@@ -242,8 +251,7 @@ void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, un
 
     // Make dist value of src vertex as 0 so that it is extracted first
     /*minHeap->array[dest] = newMinHeapNode(dest, type[dest]);
-    minHeap->pos[dest] = dest;
-    type[dest] = 0; COMENTADO PORQUE É MAIS FACIL FAZER ISTO LOGO NA INICIALIZAÇÃO*/
+    minHeap->pos[dest] = dest;*/
     
     decreaseKey(minHeap, dest, type[dest]);
 
@@ -267,32 +275,40 @@ void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, un
 
         // if the network is commercialy connected and we get a provider route as Min
         // then it means that all the other nodes in the heap are providers
-        if(commercialFlag == 1 && type[u] == 3){
-            (*provider) += minHeap->size + 1; // +1 because of the provider node we took from this cycle
-            freeHeap(minHeap);
-            return;
+        if(commercialFlag == 1){
+            if(type[u] == 3) {
+                (*provider) += minHeap->size + 1; // +1 because of the provider node we took from this cycle
+                freeHeap(minHeap);
+                return;
+            }
         }
 
         // for statistics data
-        if(type[u] == 1)
-            (*customer)++;
-        else if(type[u] == 2)
-            (*peer)++;
-        else if(type[u] == 3)
-            (*provider)++;
-
+        switch (type[u]) {
+            case 1:
+                (*customer)++;
+                break;
+            case 2:
+                (*peer)++;
+                break;
+            case 3:
+                (*provider)++;
+                break;
+        }
 
         while(auxAdj != NULL) {
 
             id = auxAdj->id;
 
+            invType = invert(auxAdj->type);
+
             // 1º condition -> checks if the node is already been decided
             // 2º condition -> checks if the node is isolated (unecessary if the network is commercialy connected)
             // 3º condition -> is the new path better? 
-            if( isInMinHeap(minHeap, id) && type[u] != UNREACHABLE && invert(auxAdj->type)<type[id]) {
-                if(routeIsValid(invert(auxAdj->type),minHeapNode->type)) {
+            if( isInMinHeap(minHeap, id) && type[u] != UNREACHABLE && invType<type[id]) {
+                if(routeIsValid(invType,minHeapNode->type)) {
 					//a rota que o nó id utilizada para chegar ao destino neste momento é guardada (não definitiva)
-					type[id] = invert(auxAdj->type);
+					type[id] = invType;
 
 					//se entramos aqui significa que a prioridade do nó = id, melhorou, altera-se a sua prioridade + heapify		
 					decreaseKey(minHeap, id, type[id]);
@@ -317,13 +333,3 @@ void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, un
 	return;
 }
 
-//inverte a ligação
-int invert(int type) {
-	if(type == 1)
-		type = 3;
-	
-	else if(type == 3)
-		type = 1;
-	
-	return type;
-}

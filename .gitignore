@@ -3,3 +3,6 @@ interRouting
 
 # .o files
 *.o
+
+# .out files
+*.out

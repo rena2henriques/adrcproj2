@@ -153,12 +153,12 @@ void freeHeap(struct MinHeap* minHeap){
 
     }
 
-    free(minHeap->array);
-    minHeap->array = NULL;
-    free(minHeap->pos);
-    minHeap->pos = NULL;
-    free(minHeap);
-    minHeap = NULL;
+    // free(minHeap->array);
+    // minHeap->array = NULL;
+    // free(minHeap->pos);
+    // minHeap->pos = NULL;
+    // free(minHeap);
+    // minHeap = NULL;
 
     return;
 }
