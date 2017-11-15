@@ -7,8 +7,12 @@ int main(int argc, char const *argv[]) {
 	unsigned int provider = 0;
 	unsigned int peer = 0;
 	unsigned int customer = 0;
-
-
+	unsigned int total = 0;
+	
+	char menu_buff[15] = "";
+	int do_all_network=-1;
+	int user_choice=0;
+	int select_destination=0;
 	int i = 0;
 
 	// flag of the state of the commercial connection
@@ -21,6 +25,22 @@ int main(int argc, char const *argv[]) {
     // graph->total_nodes size of the heap (only contains relevant nodes
     // antigamente era isto => struct MinHeap* minHeap = createMinHeap(graph->total_nodes); DAVA SEG FAULT NO FILE DO PROF
     struct MinHeap* minHeap = NULL;
+    
+    /*MENU*/
+    printf("\nWelcome, please write:\n");
+    printf("\n'1 x' to gather statistics from all nodes to node x (replace x by disered node)\n");
+    printf("\n'2' to gather statistics from all nodes to all nodes\n");
+    printf("\n >>");
+	if(fgets(menu_buff, sizeof(menu_buff), stdin) != 0);
+    if(sscanf(menu_buff,"%d", &user_choice) == 1 && user_choice == 2)
+		do_all_network=1;
+    else if(sscanf(menu_buff,"%d %d", &user_choice, &select_destination) == 2 && user_choice == 1)
+		do_all_network=0;
+	else { 
+		printf("Wrong inputs\n");
+		return -1;
+	}
+    
     minHeap = createMinHeap(network->V, network->total_nodes);
     
 
@@ -40,18 +60,22 @@ int main(int argc, char const *argv[]) {
 		printf("The network is commercially connected\n");
 	else
 		printf("The network isn't commercially connected\n");
-
-	for(i = 0; i < MAX_GRAPH; i++){
-		if(network->array[i].head != NULL)
-			electedRoute(network, i, &provider, &peer, &customer, commercialFlag, minHeap);
+	
+	if(do_all_network == 1){
+		for(i = 0; i < MAX_GRAPH; i++){
+			if(network->array[i].head != NULL)
+				electedRoute(network, i, &provider, &peer, &customer, commercialFlag, minHeap);
+		}
+	} else if (do_all_network == 0) {
+		electedRoute(network, select_destination, &provider, &peer, &customer, commercialFlag, minHeap);
 	}
-
-	// electedRoute(network, 42, &provider, &peer, &customer, commercialFlag);
+	
+	total = provider + peer + customer;
 	
 	printf("Statistics:\n");
-	printf("Nº of providers: %d\n", provider);
-	printf("Nº of peer: %d\n", peer);
-	printf("Nº of customer: %d\n", customer);
+	printf("Nº of providers routes: %d equals %f %% \n", provider, (float)provider/total);
+	printf("Nº of peer routes: %d equals %f %%\n", peer, (float)peer/total);
+	printf("Nº of customer routes: %d equals %f %%\n", customer, (float)customer/total);
 
 	free(minHeap->array);
     minHeap->array = NULL;
