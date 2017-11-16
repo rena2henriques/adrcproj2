@@ -3,7 +3,7 @@
 
 /*****************************************************************************/
 /*               Algoritmia e Desempenho em Redes de Computadores            */
-/*		       					Inter-AS routing							 */
+/*					  Static Analysis of Inter-AS 							 */
 /*                      Paulo Eusébio & Renato Henriques                     */
 /*****************************************************************************/
 
@@ -36,7 +36,7 @@ int main(int argc, char const *argv[]) {
     /*MENU*/
     printf("\nWelcome, please write:\n");
     printf("\n'1 x' to gather statistics from all nodes to node x (replace x by disered node)\n");
-    printf("\n'2' to gather statistics from all nodes to all nodes\n");
+    printf("\n'2' to gather statistics from all nodes to all other nodes\n");
     printf("\n >>");
 	if(fgets(menu_buff, sizeof(menu_buff), stdin) != 0);
     if(sscanf(menu_buff,"%d", &user_choice) == 1 && user_choice == 2)
@@ -56,7 +56,7 @@ int main(int argc, char const *argv[]) {
 	#endif
 
 	if (checkCycle(network) == TRUE) {
-		printf("The network has customer cycles!\n");
+		printf("\nThe network has customer cycles!\n");
 		printf("It will not converge!\n");
 		return 0;
 	} else {
@@ -79,11 +79,13 @@ int main(int argc, char const *argv[]) {
 	}
 	
 	total = provider + peer + customer;
-	
-	printf("Statistics:\n");
-	printf("Nº of providers routes: %d equals %f %% \n", provider, (float)provider/total);
-	printf("Nº of peer routes: %d equals %f %%\n", peer, (float)peer/total);
-	printf("Nº of customer routes: %d equals %f %%\n", customer, (float)customer/total);
+	if(do_all_network == 0)
+		printf("\nStatistics for node %d:\n", select_destination);
+	if(do_all_network == 1)
+		printf("\nStatistics for all nodes:\n");
+	printf("Nº of providers routes: %d equals %.2f %% \n", provider, (float)100*provider/total);
+	printf("Nº of peer routes: %d equals %.2f %%\n", peer, (float)100*peer/total);
+	printf("Nº of customer routes: %d equals %.2f %%\n", customer, (float)100*customer/total);
 
 	free(minHeap->array);
     minHeap->array = NULL;

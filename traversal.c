@@ -15,7 +15,7 @@ static inline int invert(int type) {
     return type;
 }
 
-// COMPLEXITY O(V+E)
+
 // search depth first ignoring non customer neighbours
 int checkCycleRec(int v, int visited[MAX_GRAPH], int stack[MAX_GRAPH], struct Graph* graph) {
 
@@ -38,7 +38,7 @@ int checkCycleRec(int v, int visited[MAX_GRAPH], int stack[MAX_GRAPH], struct Gr
 	        	else if (stack[aux->id])
 	        		return TRUE;
 	        }
-
+			//advances to next neighbour of node v
         	aux = aux->next;
         }
     }
@@ -132,7 +132,7 @@ int routeIsValid(int prevType, int currentType) {
             return INVALID;
 }
 
-
+//checks if all tier1 nodes have a peer relation with all other tier1s
 int commercially_connected(struct Graph *graph){
 
     long int i = 0;
@@ -160,6 +160,7 @@ int commercially_connected(struct Graph *graph){
     return TRUE;
 }
 
+//given a tier1, check connection with all tier1 found so far
 
 int checkTier1Connections(struct Tier1 **head, struct Graph *graph, long int id){
 
@@ -220,7 +221,9 @@ void freeList(struct Tier1 *head){
     return;
 }
 
-
+/* Given a destination, calculates types of route from all other nodes 
+ * Uses a heap to facilitate priority searches*/
+ 
 void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, unsigned int *peer, unsigned int *customer, int commercialFlag, struct MinHeap* minHeap){
 
     int V = graph->V; 
@@ -234,7 +237,7 @@ void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, un
     int invType = 0;
 
     // graph->V size of pos vector (indicates the position of the node in the heap)
-    // graph->total_nodes size of the heap (only contains relevant nodes)
+    // graph->total_nodes size of the heap (only contains actual nodes of the network)
     
     // Initialize min heap with all vertices. 
     // Initialize type of route unreachable to all vertices except the destination
