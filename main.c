@@ -1,18 +1,26 @@
 #include "graph.h"
 #include "traversal.h"
 
+/*****************************************************************************/
+/*               Algoritmia e Desempenho em Redes de Computadores            */
+/*		       					Inter-AS routing							 */
+/*                      Paulo Eusébio & Renato Henriques                     */
+/*****************************************************************************/
+
 int main(int argc, char const *argv[]) {
 
-	// counter of the types of routes <- might be needed to change to long int
+	// counter of the types of routes
 	unsigned int provider = 0;
 	unsigned int peer = 0;
 	unsigned int customer = 0;
 	unsigned int total = 0;
 	
+	// variables for menu
 	char menu_buff[15] = "";
 	int do_all_network=-1;
 	int user_choice=0;
 	int select_destination=0;
+	
 	int i = 0;
 
 	// flag of the state of the commercial connection
@@ -22,8 +30,7 @@ int main(int argc, char const *argv[]) {
 	struct Graph* network = fillGraph(argc, argv);
 
 	// graph->V size of pos vector
-    // graph->total_nodes size of the heap (only contains relevant nodes
-    // antigamente era isto => struct MinHeap* minHeap = createMinHeap(graph->total_nodes); DAVA SEG FAULT NO FILE DO PROF
+    // graph->total_nodes size of the heap (only contains relevant nodes)
     struct MinHeap* minHeap = NULL;
     
     /*MENU*/
@@ -41,9 +48,9 @@ int main(int argc, char const *argv[]) {
 		return -1;
 	}
     
+    //create heap (priority queue) for routes calculation
     minHeap = createMinHeap(network->V, network->total_nodes);
     
-
 	#ifdef DEBUG
 	printGraph(network);
 	#endif
@@ -61,6 +68,7 @@ int main(int argc, char const *argv[]) {
 	else
 		printf("The network isn't commercially connected\n");
 	
+	//According to user choice calculates all routes to all destinations or all routes to one destination
 	if(do_all_network == 1){
 		for(i = 0; i < MAX_GRAPH; i++){
 			if(network->array[i].head != NULL)
