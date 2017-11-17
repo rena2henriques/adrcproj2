@@ -48,10 +48,12 @@ int main(int argc, char const *argv[]) {
 
 	// electedRoute(network, 42, &provider, &peer, &customer, commercialFlag);
 	
+	unsigned int total = provider + peer + customer;
+
 	printf("Statistics:\n");
-	printf("Nº of providers: %d\n", provider);
-	printf("Nº of peer: %d\n", peer);
-	printf("Nº of customer: %d\n", customer);
+	printf("Nº of providers: %d %f\n", provider, (((float)provider/total))*100);
+	printf("Nº of peer: %d %f\n", peer, ((peer/(provider+peer+customer))));
+	printf("Nº of customer: %d %f\n", customer, ((customer/(provider+peer+customer))));
 
 	free(minHeap->array);
     minHeap->array = NULL;

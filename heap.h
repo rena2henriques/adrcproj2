@@ -7,6 +7,7 @@
 #include <string.h>
 #include "utils.h"
 
+
 // Structure to represent a min heap node
 struct MinHeapNode {
     long int  id;

@@ -250,10 +250,7 @@ void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, un
     }
 
     // Make dist value of src vertex as 0 so that it is extracted first
-    /*minHeap->array[dest] = newMinHeapNode(dest, type[dest]);
-    minHeap->pos[dest] = dest;*/
-    
-    decreaseKey(minHeap, dest, type[dest]);
+    decreaseKey(minHeap, dest, type[dest]); // called updateHeap() in our report
 
     // Initially size of min heap is equal to V
     minHeap->size = position;
@@ -302,16 +299,16 @@ void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, un
 
             invType = invert(auxAdj->type);
 
-            // 1º condition -> checks if the node is already been decided
-            // 2º condition -> checks if the node is isolated (unecessary if the network is commercialy connected)
+            // 1º condition -> checks if the node has already been decided
+            // 2º condition -> checks if the node has isolated (unecessary if the network is commercialy connected)
             // 3º condition -> is the new path better? 
-            if( isInMinHeap(minHeap, id) && type[u] != UNREACHABLE && invType<type[id]) {
+            if( MIN(minHeap->pos[id], minHeap->size) && type[u] != UNREACHABLE && invType<type[id]) {
                 if(routeIsValid(invType,minHeapNode->type)) {
 					//a rota que o nó id utilizada para chegar ao destino neste momento é guardada (não definitiva)
 					type[id] = invType;
 
 					//se entramos aqui significa que a prioridade do nó = id, melhorou, altera-se a sua prioridade + heapify		
-					decreaseKey(minHeap, id, type[id]);
+					decreaseKey(minHeap, id, type[id]); // called updateHeap() in our report
                 }
 
             }

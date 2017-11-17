@@ -85,7 +85,7 @@ struct Graph* fillGraph(int argc, char const *argv[]) {
     /* opening the file, if the user gives a file on command line, it's used, 
     otherwise it uses the PrefixTable.txt file*/
     if (argc == 1) {
-        if ( (file = fopen("network.txt", "r")) == NULL ) {
+        if ( (file = fopen("LargeNetwork.txt", "r")) == NULL ) {
             printf("Error while reading file: %s\n", strerror(errno));
             exit(1);
         }

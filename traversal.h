@@ -5,13 +5,13 @@
 #include "heap.h"
 #include "utils.h"
 
+#define MIN(X, Y) (((X) < (Y)) ? (1) : (0))
+
 #define TRUE 1
 #define FALSE 0
 #define VALID 1
 #define INVALID 0
 #define UNREACHABLE 4
-
-#define INVERT 
 
 struct Tier1 {
 	long int id;
