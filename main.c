@@ -55,7 +55,7 @@ int main(int argc, char const *argv[]) {
 
 	/*MENU*/
     printf("\nWelcome, please write:\n");
-    printf("\n'1 x' to gather statistics from all nodes to node x (replace x by disered node)\n");
+    printf("\n'1 x' to gather statistics from all nodes to node x (replace x by desired node)\n");
     printf("\n'2' to gather statistics from all nodes to all other nodes\n");
     printf("\n >>");
     
