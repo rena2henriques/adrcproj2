@@ -1,5 +1,11 @@
 #include "traversal.h"
 
+ /**********************************************************************************
+  * traversal.c																		   *
+  *																				   * 
+  * Has all the functions needed analyse the network							   *
+  * *******************************************************************************/
+
 //inverte a ligação
 static inline int invert(int type) {
     if(type == 1)
@@ -9,8 +15,8 @@ static inline int invert(int type) {
     return type;
 }
 
-// COMPLEXITY O(V+E)
-// goes through the DFS tree to check cycles
+
+// search depth first ignoring non customer neighbours
 int checkCycleRec(int v, int visited[MAX_GRAPH], int stack[MAX_GRAPH], struct Graph* graph) {
 
     if(visited[v] == FALSE) {
@@ -28,11 +34,11 @@ int checkCycleRec(int v, int visited[MAX_GRAPH], int stack[MAX_GRAPH], struct Gr
         		// if the node has already been visited, then there is a cycle (there's a backedge)
 	        	if (!visited[aux->id] && checkCycleRec(aux->id, visited, stack, graph) )
 	        		return TRUE;
-	        	// if the node was already part of this node, then there's a cycle
+	        	// if the node was already part of this branch, then there's a cycle
 	        	else if (stack[aux->id])
 	        		return TRUE;
 	        }
-
+			//advances to next neighbour of node v
         	aux = aux->next;
         }
     }
@@ -57,7 +63,7 @@ int checkCycle(struct Graph* graph) {
     }
 
     // for every node that is connected to others, call a function that
-    // goes through the DFS tree 
+    // search depth first ignoring non customer neighbours
     for(i = 0; i < MAX_GRAPH; i++) {
     	if (graph->array[i].head != NULL) {
 	        if (checkCycleRec(i, visited, stack, graph)){
@@ -71,47 +77,9 @@ int checkCycle(struct Graph* graph) {
     return FALSE;
 }
 
-// Não é usado, mas em homenagem ao tempo que perdemos a bater tecla decidimos deixar
-void DFS (int v, int visited[MAX_GRAPH], int *visitedCounter,struct Graph* graph, int prevType) {//,tier1List) {
-
-    // set the node as visited
-    visited[v] = TRUE;
-    (*visitedCounter)++;
-
-    // the check if the node is a Tier 1 ISP
-    int tier1Flag = 1; // 1 if it's a Tier 1, 0 if isn't
-
-    struct AdjListNode *aux = graph->array[v].head;
-        
-    // Recur for all the vertices adjacent to this aux node
-    while(aux != NULL) {
-
-        if(visited[aux->id] == FALSE) {
-            // if the next step of the path is valid by the rules of BGP
-            if (routeIsValid(prevType, aux->type)) {
-                DFS(aux->id, visited, visitedCounter, graph, aux->type);
-            }
-        } 
-		  
-        // if the node has at least a provider, then it isnt a tier1
-        if (aux->type == 3)
-            tier1Flag = 0;
-
-        aux = aux->next;
-    }    
-
-    // insert the id of the node in a list
-    if (tier1Flag == 1) {
-		printf("node: %d is tier 1\n", v); //temporary
-        //insertTier1List(aux->id, tier1List); // CORRECT
-    }
-
-    return;
-} 
-
-// checks if a certain the route is valid
+// checks if a certain the route is valid according to routing and exportation rules
 int routeIsValid(int prevType, int currentType) {   
-        if(currentType == 0) //if we are looking to a destination, the destination is marked with 0
+        if(currentType == 0) //if we calculating routes, the destination is marked with 0 (simplifies de algolrithm)
             return VALID;
 		else if(prevType == 1 && currentType == 1)
 			return VALID;
@@ -126,7 +94,7 @@ int routeIsValid(int prevType, int currentType) {
             return INVALID;
 }
 
-
+//checks if all tier1 nodes have a peer relation with all other tier1s
 int commercially_connected(struct Graph *graph){
 
     long int i = 0;
@@ -144,8 +112,10 @@ int commercially_connected(struct Graph *graph){
 
             if(checkTier1Connections(&head, graph, i))
                 continue;
-            else
+            else {
+                freeList(head);
                 return FALSE;
+            }
         }
     }
 
@@ -154,9 +124,11 @@ int commercially_connected(struct Graph *graph){
     return TRUE;
 }
 
+//given a tier1, check connection with all tier1 found so far
 
 int checkTier1Connections(struct Tier1 **head, struct Graph *graph, long int id){
 
+	//if its first tier1, insert at the head 
     if ((*head) == NULL){
         (*head) = (struct Tier1*) mymalloc( sizeof(struct Tier1));
         (*head)->id = id;
@@ -169,7 +141,7 @@ int checkTier1Connections(struct Tier1 **head, struct Graph *graph, long int id)
 
     // search the tier1 list
     while(auxTier1 != NULL) {
-        // search the adj list
+        // search the adj list of the tier1 being tested
         while( auxGraph != NULL){
             // if it finds the connections then there's no need to search til the end
             if(auxTier1->id == auxGraph->id)
@@ -178,14 +150,14 @@ int checkTier1Connections(struct Tier1 **head, struct Graph *graph, long int id)
             auxGraph = auxGraph->next;
         }
 
-        // if the list was search until the end then no connection was found
+        // if the adj list was search until the end then no connection was found
         if (auxGraph == NULL){
             return FALSE; //even if it was the last one, the break prevents auxgraph from getting to the null
         }
 
         // to start at the beginning of the list
         auxGraph = graph->array[id].head;
-
+		// repeat for next node of tier1 list
         auxTier1 = auxTier1->next;
     }
 
@@ -195,7 +167,7 @@ int checkTier1Connections(struct Tier1 **head, struct Graph *graph, long int id)
     auxTier1->next = *head;
     *head = auxTier1;
 
-    // if we got here it means that this tier1 is connected to any other tier1 node of the list
+    // if we got here it means that this tier1 is connected to any other tier1 node of the list, is now on the list
     return TRUE;
 }
 
@@ -213,10 +185,12 @@ void freeList(struct Tier1 *head){
     return;
 }
 
-
+/* Given a destination, calculates types of route from all other nodes 
+ * Uses a heap to facilitate priority searches*/
+ 
 void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, unsigned int *peer, unsigned int *customer, int commercialFlag, struct MinHeap* minHeap){
 
-    int V = graph->V; // Get the number of valid vertices in graph
+    int V = graph->V; 
     int type[V];      // dist values used to pick minimum weight edge in cut
     int u = -1;
     struct AdjListNode* auxAdj = NULL;
@@ -226,52 +200,47 @@ void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, un
 	long int v = 0;
     int invType = 0;
 
-    // graph->V size of pos vector
-    // graph->total_nodes size of the heap (only contains relevant nodes
-    // antigamente era isto => struct MinHeap* minHeap = createMinHeap(graph->total_nodes); DAVA SEG FAULT NO FILE DO PROF
-    // struct MinHeap* minHeap = NULL;
-    // minHeap = createMinHeap(graph->V, graph->total_nodes);
+    // graph->V size of pos vector (indicates the position of the node in the heap)
+    // graph->total_nodes size of the heap (only contains actual nodes of the network)
     
-    // Initialize min heap with all vertices. dist value of all vertices 
-    // minHeap->array é a priority queue, tem o tamanho igual ao numero de nós válidos, os elemenos do array são id's e os seus indices são a sua prioridade
-    // assim as operações heapify não estão a fazer operações desnecessárias
+    // Initialize min heap with all vertices. 
+    // Initialize type of route unreachable to all vertices except the destination
     for(v = 0; v < V; ++v) {
 
         type[v] = UNREACHABLE;
 
-        if(graph->array[v].head != NULL) {
+        if(graph->array[v].head != NULL) { //if node is valid
 			if(v == dest) //creates top priority for destination node, needed for 1st iteration of algorithm
 				type[v] = 0;
 				
-			minHeap->array[position] = newMinHeapNode(v, type[v]);
-			minHeap->pos[v] = position;
-			position++;
+			minHeap->array[position] = newMinHeapNode(v, type[v]); //saves current node's info in the heap
+			minHeap->pos[v] = position; //saves current node's position in the heap
+			position++; //variables that keeps track of the actual nodes (that belong to the network)
 		}
     }
 
-    // Make dist value of src vertex as 0 so that it is extracted first
+    // Destin node has top priority, it is extracted first
     decreaseKey(minHeap, dest, type[dest]); // called updateHeap() in our report
 
-    // Initially size of min heap is equal to V
+    // Initially size of min heap is equal to nº of nodes in the network
     minHeap->size = position;
   
     // In the followin loop, min heap contains all nodes
-    // whose shortest distance is not yet finalized.
+    // whose type of route calculation is not yet finalized.
     while (!isEmpty(minHeap)) {
-        // Extract the vertex with better value
+        // Extract the vertex with better value, decrement heap size
         minHeapNode = extractMin(minHeap);
         u = minHeapNode->id; // Store the extracted vertex number
 
-        // Traverse through all adjacent vertices of u (the extracted
-        // vertex) and update their routes
+        // Traverse through all adjacent vertices of u (the extracted vertex) and update their routes
         auxAdj = graph->array[u].head;
 
-        // for the nodes that are not included in our network
+        // skip the nodes that are not included in our network
         if(auxAdj == NULL)
             continue;
 
         // if the network is commercialy connected and we get a provider route as Min
-        // then it means that all the other nodes in the heap are providers
+        // then it means that all the other nodes in the heap have provider route to dest
         if(commercialFlag == 1){
             if(type[u] == 3) {
                 (*provider) += minHeap->size + 1; // +1 because of the provider node we took from this cycle
@@ -292,27 +261,30 @@ void electedRoute(struct Graph *graph, long int dest, unsigned int *provider, un
                 (*provider)++;
                 break;
         }
-
+		//gets\updates info for all the adjacent nodes of the current node
         while(auxAdj != NULL) {
 
             id = auxAdj->id;
-
+			
+			//in this algorithm we look at the type of connection in the opposite direction
+			//that being from the adjacent node to the current node
             invType = invert(auxAdj->type);
 
             // 1º condition -> checks if the node has already been decided
             // 2º condition -> checks if the node has isolated (unecessary if the network is commercialy connected)
             // 3º condition -> is the new path better? 
             if( MIN(minHeap->pos[id], minHeap->size) && type[u] != UNREACHABLE && invType<type[id]) {
+				//check the validity of the route
                 if(routeIsValid(invType,minHeapNode->type)) {
-					//a rota que o nó id utilizada para chegar ao destino neste momento é guardada (não definitiva)
+					//update the type of route that this adjacent node uses to get to destin (not definitive)
 					type[id] = invType;
 
-					//se entramos aqui significa que a prioridade do nó = id, melhorou, altera-se a sua prioridade + heapify		
+					//update adjacent node's priority in the heap, and heapify		
 					decreaseKey(minHeap, id, type[id]); // called updateHeap() in our report
                 }
 
             }
-
+            //move to next adjacent node of the current node
             auxAdj = auxAdj->next;
         }
     }

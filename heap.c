@@ -1,6 +1,13 @@
 #include "heap.h"
+
+ /**********************************************************************************
+  * heap.c																		   *
+  *																				   * 
+  * Has all the functions needed to mantain and analyse the heap used 			   *
+  * by the electedRoute function												   *
+  * *******************************************************************************/
  
-// A utility function to create a new Min Heap Node
+// An utility function to create a new Min Heap Node
 struct MinHeapNode* newMinHeapNode(int v, int type)
 {
     struct MinHeapNode* minHeapNode = (struct MinHeapNode*) malloc(sizeof(struct MinHeapNode));
@@ -9,31 +16,21 @@ struct MinHeapNode* newMinHeapNode(int v, int type)
     return minHeapNode;
 }
  
-// A utility function to create a Min Heap
-
-/**minHeap->array[0]->id :::: id do nó como maior prioridade
- * minHeap->pos[x] ::::: posição do nó de id = x, na minHeap->array[ ]
- * se minHeap->pos[10] == 0, então minHeap->array[0]->id == 10, i.e. o nó 10 é o com maior prioridade
- * 
- * minHeap->size = [(tamanho total de nós) - (nós já definitivos)]
- * 
- * quando um nó se torna definitivo, troca-se a info de array[0] com array[size] (depois é feito heapify e as prioridades voltam a bater certo)
- * e decrementa-se o minHeap->size, e nunca mais vais olhar para esse nó**/
-
+// An utility function to create a Min Heap
 
 struct MinHeap* createMinHeap(int capacity, int heap_capacity) {
     struct MinHeap* minHeap = NULL;
     minHeap = (struct MinHeap*) malloc(sizeof(struct MinHeap));
-    minHeap->pos = NULL;
+    minHeap->pos = NULL; //vector with the size of MAX_GRAPH
     minHeap->pos = (int *) malloc(capacity * sizeof(int));
     minHeap->size = 0;
     minHeap->capacity = heap_capacity;
-    minHeap->array = NULL;
+    minHeap->array = NULL;	//vector with size equal to the number of nodes in the network
     minHeap->array = (struct MinHeapNode**) malloc(heap_capacity * sizeof(struct MinHeapNode*));
     return minHeap;
 }
  
-// A utility function to swap two nodes of min heap. Needed for min heapify
+// An utility function to swap two nodes of min heap. Needed for min heapify
 void swapMinHeapNode(struct MinHeapNode** a, struct MinHeapNode** b)
 {
     struct MinHeapNode* t = *a;
@@ -42,7 +39,7 @@ void swapMinHeapNode(struct MinHeapNode** a, struct MinHeapNode** b)
 }
  
 // A standard function to heapify at given idx
-// This function also updates position of nodes when they are swapped.
+// This function also updates position of nodes in the array, when they are swapped.
 // Position is needed for decreaseKey()
 void minHeapify(struct MinHeap* minHeap, int idx)
 {
@@ -76,7 +73,7 @@ void minHeapify(struct MinHeap* minHeap, int idx)
     }
 }
  
-// A utility function to check if the given minHeap is ampty or not
+// An utility function to check if the given minHeap is empty or not
 int isEmpty(struct MinHeap* minHeap)
 {
     return minHeap->size == 0;
@@ -106,7 +103,7 @@ struct MinHeapNode* extractMin(struct MinHeap* minHeap)
     return root;
 }
  
-// Function to decreasy dist value of a given vertex v. This function
+// Function to decrease type of route of a given vertex v. This function
 // uses pos[] of min heap to get the current index of node in min heap
 void decreaseKey(struct MinHeap* minHeap, int v, int type)
 {
@@ -130,7 +127,7 @@ void decreaseKey(struct MinHeap* minHeap, int v, int type)
     }
 }
  
-// A utility function to check if a given vertex
+// An utility function to check if a given vertex
 // 'v' is in min heap or not
 int isInMinHeap(struct MinHeap *minHeap, int v) {
    if (minHeap->pos[v] < minHeap->size)
@@ -151,13 +148,5 @@ void freeHeap(struct MinHeap* minHeap){
         }
 
     }
-
-    // free(minHeap->array);
-    // minHeap->array = NULL;
-    // free(minHeap->pos);
-    // minHeap->pos = NULL;
-    // free(minHeap);
-    // minHeap = NULL;
-
     return;
 }

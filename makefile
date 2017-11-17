@@ -17,7 +17,7 @@
 CC = gcc
 
 #  Compiler Flags
-CFLAGS = -Wall -c -O3 -pg
+CFLAGS = -Wall -c -O3
 
 #  Sources
 SOURCES = graph.c traversal.c heap.c utils.c main.c
@@ -26,7 +26,7 @@ SOURCES = graph.c traversal.c heap.c utils.c main.c
 OBJECTS = graph.o traversal.o heap.o utils.o main.o
 
 interRouting: $(OBJECTS)
-	gcc -o $@ $(OBJECTS) -pg
+	gcc -o $@ $(OBJECTS)
 
 graph.o: graph.c graph.h
 	$(CC) $(CFLAGS) $(DEBUG) graph.c

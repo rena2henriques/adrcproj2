@@ -1,6 +1,11 @@
 #include "graph.h"
- 
-// A utility function to create a new adjacency list node
+ /**********************************************************************************
+  * Graph.c																		   *
+  *																				   * 
+  * Has all the functions needed to store and read the information of the network  *
+  * *******************************************************************************/
+  
+// An utility function to create a new adjacency list node
 struct AdjListNode* newAdjListNode(long int id, int type) {
     struct AdjListNode* newNode = (struct AdjListNode*) mymalloc( sizeof(struct AdjListNode));
     newNode->id = id;
@@ -32,7 +37,7 @@ struct Graph* createGraph(long int V) {
     return graph;
 }
  
-// Adds an edge to an undirected graph
+// Adds an edge to a graph
 void addEdge(struct Graph* graph, long int src, long int dest, int type) {
     // Add an edge from src to dest.  A new node is added to the adjacency
     // list of src.  The node is added at the begining
@@ -51,18 +56,18 @@ void addEdge(struct Graph* graph, long int src, long int dest, int type) {
 // A utility function to print the adjacenncy list representation of graph
 void printGraph(struct Graph* graph) {
     int v;
-    struct AdjListNode* pCrawl = NULL;
+    struct AdjListNode* aux = NULL;
 
     for (v = 0; v < graph->V; ++v)
     {
         // only prints if the list has any nodes in it
         if (graph->array[v].head != NULL) {
-            pCrawl = graph->array[v].head;
+            aux = graph->array[v].head;
             printf("\n Adjacency list of vertex %d\n head ", v);
-            while (pCrawl)
+            while (aux)
             {
-                printf("-> %li type -> %d", pCrawl->id, pCrawl->type);
-                pCrawl = pCrawl->next;
+                printf("-> %li type -> %d", aux->id, aux->type);
+                aux = aux->next;
             }
             printf("\n");
         }
@@ -83,7 +88,7 @@ struct Graph* fillGraph(int argc, char const *argv[]) {
     int type = 0;
 
     /* opening the file, if the user gives a file on command line, it's used, 
-    otherwise it uses the PrefixTable.txt file*/
+    otherwise it uses the LargeNetwork.txt file*/
     if (argc == 1) {
         if ( (file = fopen("LargeNetwork.txt", "r")) == NULL ) {
             printf("Error while reading file: %s\n", strerror(errno));
